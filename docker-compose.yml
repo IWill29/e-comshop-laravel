@@ -8,6 +8,8 @@ services:
     working_dir: /var/www/html
     volumes:
       - .:/var/www/html
+    env_file:
+      - .env.docker
     environment:
       APP_ENV: local
       APP_DEBUG: "true"
@@ -15,9 +17,6 @@ services:
       DB_CONNECTION: pgsql
       DB_HOST: pgsql
       DB_PORT: 5432
-      DB_DATABASE: ecomshop
-      DB_USERNAME: ecomshop
-      DB_PASSWORD: secret
       REDIS_HOST: redis
       REDIS_PORT: 6379
       CACHE_STORE: redis
@@ -49,10 +48,8 @@ services:
     image: postgres:16-alpine
     container_name: ecomshop-pgsql
     restart: unless-stopped
-    environment:
-      POSTGRES_DB: ecomshop
-      POSTGRES_USER: ecomshop
-      POSTGRES_PASSWORD: secret
+    env_file:
+      - .env.docker
     volumes:
       - pgsql-data:/var/lib/postgresql/data
     healthcheck:

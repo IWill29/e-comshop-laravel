@@ -24,28 +24,20 @@ git clone https://github.com/IWill29/e-comshop-laravel.git
 cd e-comshop-laravel
 ```
 
-### 2. Copy environment file (optional)
+### 2. Configure Docker credentials
 
-Docker Compose sets DB variables automatically. For local overrides:
+Database passwords are **not** committed to git. Copy the example file and set a local password:
+
+```bash
+cp .env.docker.example .env.docker
+```
+
+Edit `.env.docker` — set `POSTGRES_PASSWORD` and `DB_PASSWORD` to the **same** value (any strong local-only password).
+
+Optional: copy Laravel `.env` if you run Artisan outside Docker:
 
 ```bash
 cp .env.example .env
-```
-
-If using `.env` locally with Docker, set:
-
-```env
-APP_URL=http://localhost:8080
-DB_CONNECTION=pgsql
-DB_HOST=pgsql
-DB_PORT=5432
-DB_DATABASE=ecomshop
-DB_USERNAME=ecomshop
-DB_PASSWORD=secret
-REDIS_HOST=redis
-CACHE_STORE=redis
-SESSION_DRIVER=redis
-QUEUE_CONNECTION=redis
 ```
 
 ### 3. Build and start containers
