@@ -35,7 +35,5 @@ COPY docker/php/conf.d/opcache.ini /usr/local/etc/php/conf.d/opcache.ini
 
 COPY --chmod=755 docker/php/entrypoint.sh /usr/local/bin/entrypoint.sh
 
-USER www-data
-
 ENTRYPOINT ["entrypoint.sh"]
 CMD ["php-fpm", "-F"]

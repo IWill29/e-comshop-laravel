@@ -12,8 +12,26 @@ export default {
 
     theme: {
         extend: {
+            screens: {
+                xs: '475px',
+            },
             fontFamily: {
-                sans: ['Figtree', ...defaultTheme.fontFamily.sans],
+                sans: ['Outfit', ...defaultTheme.fontFamily.sans],
+                display: ['Syne', ...defaultTheme.fontFamily.sans],
+            },
+            colors: {
+                stone: {
+                    50: '#F7F5F2',
+                },
+            },
+            keyframes: {
+                marquee: {
+                    '0%': { transform: 'translateX(0)' },
+                    '100%': { transform: 'translateX(-100%)' },
+                },
+            },
+            animation: {
+                marquee: 'marquee 45s linear infinite',
             },
         },
     },
