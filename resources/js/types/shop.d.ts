@@ -95,3 +95,64 @@ export type HomePageProps = {
     newArrivals: Product[];
     categories: Category[];
 };
+
+export interface CartLineItem {
+    key: string;
+    productId: number;
+    name: string;
+    slug: string;
+    brand: string;
+    size: number;
+    quantity: number;
+    unitPrice: number;
+    imageUrl: string;
+}
+
+export interface CheckoutSummary {
+    subtotal: number;
+    shipping: number;
+    total: number;
+    currency: string;
+}
+
+export interface CheckoutFormDefaults {
+    email: string;
+    name: string;
+    line1: string;
+    line2: string;
+    city: string;
+    state: string;
+    postalCode: string;
+    country: string;
+}
+
+export type CheckoutIndexPageProps = {
+    items: CartLineItem[];
+    summary: CheckoutSummary;
+    defaults: CheckoutFormDefaults;
+};
+
+export interface CheckoutOrderItem {
+    productName: string;
+    size: number | null;
+    quantity: number;
+    unitPrice: number;
+}
+
+export interface CheckoutOrder {
+    id: number;
+    number: string;
+    email: string;
+    total: number;
+    currency: string;
+    items: CheckoutOrderItem[];
+    placedAt: string;
+}
+
+export type CheckoutSuccessPageProps = {
+    order: CheckoutOrder | null;
+};
+
+export type CheckoutCancelPageProps = {
+    message?: string | null;
+};

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
@@ -15,6 +16,11 @@ Route::get('/search', [ShopController::class, 'search'])->name('shop.search');
 Route::get('/sale', [ShopController::class, 'sale'])->name('shop.sale');
 Route::get('/new-arrivals', [ShopController::class, 'newArrivals'])->name('shop.new-arrivals');
 Route::get('/products/{product:slug}', [ProductController::class, 'show'])->name('products.show');
+
+Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
+Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
+Route::get('/checkout/success', [CheckoutController::class, 'success'])->name('checkout.success');
+Route::get('/checkout/cancel', [CheckoutController::class, 'cancel'])->name('checkout.cancel');
 
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
