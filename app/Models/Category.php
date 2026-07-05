@@ -16,6 +16,11 @@ class Category extends Model
     /** @use HasFactory<CategoryFactory> */
     use HasFactory;
 
+    public function getRouteKeyName(): string
+    {
+        return 'slug';
+    }
+
     /**
      * @return HasMany<Product, $this>
      */

@@ -17,7 +17,7 @@ interface CategoryTileProps {
     category: Category;
 }
 
-export default function CategoryTile({ category }: CategoryTileProps) {
+export default function CategoryTile({ category }: Readonly<CategoryTileProps>) {
     const image = categoryImages[category.slug] ?? FALLBACK_SHOE_IMAGE;
 
     return (

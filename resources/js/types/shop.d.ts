@@ -22,6 +22,71 @@ export interface Product {
     category?: ProductCategory;
 }
 
+export interface ProductDetail extends Product {
+    sku: string;
+    gender: string;
+    description: string | null;
+    stock: number;
+    sizes: number[];
+}
+
+export interface CatalogFilters {
+    gender: string | null;
+    brand: string | null;
+    minPrice: number | null;
+    maxPrice: number | null;
+    size: number | null;
+    sort: string;
+}
+
+export interface FilterOptions {
+    brands: string[];
+    genders: string[];
+    sizes: number[];
+    priceRange: {
+        min: number;
+        max: number;
+    };
+}
+
+export interface PaginationLink {
+    url: string | null;
+    label: string;
+    active: boolean;
+}
+
+export interface Paginated<T> {
+    data: T[];
+    links: {
+        first: string | null;
+        last: string | null;
+        prev: string | null;
+        next: string | null;
+    };
+    meta: {
+        current_page: number;
+        from: number | null;
+        last_page: number;
+        links: PaginationLink[];
+        path: string;
+        per_page: number;
+        to: number | null;
+        total: number;
+    };
+}
+
+export type ShopIndexPageProps = {
+    category: Category | null;
+    products: Paginated<Product>;
+    filters: CatalogFilters;
+    filterOptions: FilterOptions;
+    categories: Category[];
+};
+
+export type ProductShowPageProps = {
+    product: ProductDetail;
+};
+
 export type HomePageProps = {
     featuredProducts: Product[];
     newArrivals: Product[];

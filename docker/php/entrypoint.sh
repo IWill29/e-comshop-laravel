@@ -3,7 +3,9 @@ set -e
 
 cd /var/www/html
 
-chown -R www-data:www-data storage bootstrap/cache 2>/dev/null || true
+if [ "$(id -u)" = "0" ]; then
+    chown -R www-data:www-data storage bootstrap/cache 2>/dev/null || true
+fi
 
 setup_needed=false
 [ ! -f vendor/autoload.php ] && setup_needed=true
@@ -29,7 +31,9 @@ if [ "$setup_needed" = "true" ]; then
         npm run build
     fi
 
-    chown -R www-data:www-data storage bootstrap/cache public/build 2>/dev/null || true
+    if [ "$(id -u)" = "0" ]; then
+        chown -R www-data:www-data storage bootstrap/cache public/build 2>/dev/null || true
+    fi
 fi
 
 php artisan migrate --force --no-interaction || true

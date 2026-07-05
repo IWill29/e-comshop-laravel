@@ -133,7 +133,7 @@ interface BrandLogoProps extends LogoProps {
     brand: string;
 }
 
-export default function BrandLogo({ brand, className, ...props }: BrandLogoProps) {
+export default function BrandLogo({ brand, className, ...props }: Readonly<BrandLogoProps>) {
     const Custom = CUSTOM_LOGOS[brand];
 
     if (Custom) {
