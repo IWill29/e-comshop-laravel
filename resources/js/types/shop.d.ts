@@ -37,6 +37,7 @@ export interface CatalogFilters {
     maxPrice: number | null;
     size: number | null;
     sort: string;
+    query?: string | null;
 }
 
 export interface FilterOptions {
@@ -82,6 +83,8 @@ export type ShopIndexPageProps = {
     filterOptions: FilterOptions;
     categories: Category[];
 };
+
+export type ShopCollectionPageProps = ShopIndexPageProps;
 
 export type ProductShowPageProps = {
     product: ProductDetail;
