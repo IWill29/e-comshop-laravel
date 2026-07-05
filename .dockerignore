@@ -14,3 +14,8 @@ storage/framework/views/*
 bootstrap/cache/*.php
 .phpunit.result.cache
 .phpunit.cache
+tests
+ARCHITECTURE.md
+DOCKER.md
+*.md
+!README.md

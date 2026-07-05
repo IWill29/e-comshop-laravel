@@ -21,19 +21,21 @@ RUN apk add --no-cache \
         opcache \
         pdo \
         pdo_pgsql \
-        zip
-
-RUN apk add --no-cache --virtual .build-deps $PHPIZE_DEPS \
+        zip \
+    && apk add --no-cache --virtual .build-deps $PHPIZE_DEPS \
     && pecl install redis \
     && docker-php-ext-enable redis \
     && apk del .build-deps
 
-COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+COPY --from=composer:2 --chmod=755 /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www/html
 
-COPY docker/php/entrypoint.sh /usr/local/bin/entrypoint.sh
-RUN chmod +x /usr/local/bin/entrypoint.sh
+COPY docker/php/conf.d/opcache.ini /usr/local/etc/php/conf.d/opcache.ini
+
+COPY --chmod=755 docker/php/entrypoint.sh /usr/local/bin/entrypoint.sh
+
+USER www-data
 
 ENTRYPOINT ["entrypoint.sh"]
-CMD ["php-fpm"]
+CMD ["php-fpm", "-F"]

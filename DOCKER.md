@@ -24,28 +24,20 @@ git clone https://github.com/IWill29/e-comshop-laravel.git
 cd e-comshop-laravel
 ```
 
-### 2. Copy environment file (optional)
+### 2. Configure Docker credentials
 
-Docker Compose sets DB variables automatically. For local overrides:
+Database passwords are **not** committed to git. Copy the example file and set a local password:
+
+```bash
+cp .env.docker.example .env.docker
+```
+
+Edit `.env.docker` — set `POSTGRES_PASSWORD` and `DB_PASSWORD` to the **same** value (any strong local-only password).
+
+Optional: copy Laravel `.env` if you run Artisan outside Docker:
 
 ```bash
 cp .env.example .env
-```
-
-If using `.env` locally with Docker, set:
-
-```env
-APP_URL=http://localhost:8080
-DB_CONNECTION=pgsql
-DB_HOST=pgsql
-DB_PORT=5432
-DB_DATABASE=ecomshop
-DB_USERNAME=ecomshop
-DB_PASSWORD=secret
-REDIS_HOST=redis
-CACHE_STORE=redis
-SESSION_DRIVER=redis
-QUEUE_CONNECTION=redis
 ```
 
 ### 3. Build and start containers
@@ -54,11 +46,37 @@ QUEUE_CONNECTION=redis
 docker compose up -d --build
 ```
 
-First run installs Composer deps, builds frontend assets, and runs migrations.
+First run installs Composer deps and builds frontend assets **in the background** — php-fpm starts immediately (~5 s). Watch progress:
+
+```bash
+docker compose logs -f app
+```
 
 ### 4. Open the app
 
 http://localhost:8080
+
+---
+
+## Why is it faster now?
+
+| Before | After |
+|--------|-------|
+| `migrate` blocked php-fpm on **every** start (30–60 s on Windows) | php-fpm starts **immediately**; setup runs in background only when needed |
+| `vendor/` on slow Windows bind mount | Use **WSL2 filesystem** (`\\wsl$\...`) or run Composer inside the container |
+| Migrate on every restart | Migrate only during **first-time setup** (background) |
+
+After dependencies are installed, `docker compose up -d` should be ready in **~5–10 seconds**.
+
+> **Windows tip:** For faster file I/O, clone the project inside WSL2 (`~/projects/`) instead of `C:\Users\...`.
+
+### Manual commands (when you change dependencies)
+
+```bash
+docker compose exec app composer install
+docker compose exec app npm ci && npm run build
+docker compose exec app php artisan migrate
+```
 
 ---
 
