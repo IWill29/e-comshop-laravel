@@ -1,0 +1,236 @@
+# Docker — Local Development
+
+Run the Laravel shoe store locally with Docker. No need for `npm run dev` — assets are built automatically on first start (`npm run build`).
+
+**Stack:** PHP 8.4, Nginx, PostgreSQL 16, Redis 7
+
+**App URL:** http://localhost:8080
+
+---
+
+## Requirements
+
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/) (Windows / macOS / Linux)
+- Git
+
+---
+
+## Quick start
+
+### 1. Clone and enter the project
+
+```bash
+git clone https://github.com/IWill29/e-comshop-laravel.git
+cd e-comshop-laravel
+```
+
+### 2. Configure Docker credentials
+
+Database passwords are **not** committed to git. Copy the example file and set a local password:
+
+```bash
+cp .env.docker.example .env.docker
+```
+
+Edit `.env.docker` — set `POSTGRES_PASSWORD` and `DB_PASSWORD` to the **same** value (any strong local-only password).
+
+Optional: copy Laravel `.env` if you run Artisan outside Docker:
+
+```bash
+cp .env.example .env
+```
+
+### 3. Build and start containers
+
+```bash
+docker compose up -d --build
+```
+
+First run installs Composer deps and builds frontend assets **in the background** — php-fpm starts immediately (~5 s). Watch progress:
+
+```bash
+docker compose logs -f app
+```
+
+### 4. Open the app
+
+http://localhost:8080
+
+---
+
+## Why is it faster now?
+
+| Before | After |
+|--------|-------|
+| `migrate` blocked php-fpm on **every** start (30–60 s on Windows) | php-fpm starts **immediately**; setup runs in background only when needed |
+| `vendor/` on slow Windows bind mount | Use **WSL2 filesystem** (`\\wsl$\...`) or run Composer inside the container |
+| Migrate on every restart | Migrate only during **first-time setup** (background) |
+
+After dependencies are installed, `docker compose up -d` should be ready in **~5–10 seconds**.
+
+> **Windows tip:** For faster file I/O, clone the project inside WSL2 (`~/projects/`) instead of `C:\Users\...`.
+
+### Manual commands (when you change dependencies)
+
+```bash
+docker compose exec app composer install
+docker compose exec app npm ci && npm run build
+docker compose exec app php artisan migrate
+```
+
+---
+
+## Docker commands
+
+| Action | Command |
+|--------|---------|
+| **Start** | `docker compose up -d` |
+| **Start + rebuild** | `docker compose up -d --build` |
+| **Stop** | `docker compose down` |
+| **Stop + remove DB volume** | `docker compose down -v` |
+| **View logs** | `docker compose logs -f` |
+| **View app logs** | `docker compose logs -f app` |
+| **Container status** | `docker compose ps` |
+| **Shell inside app** | `docker compose exec app sh` |
+
+---
+
+## Laravel Pint (code style)
+
+[Pint](https://laravel.com/docs/pint) formats PHP code to Laravel standards.
+
+### Fix code style
+
+```bash
+docker compose exec app ./vendor/bin/pint
+```
+
+### Check without changing files (CI)
+
+```bash
+docker compose exec app ./vendor/bin/pint --test
+```
+
+### Via Composer
+
+```bash
+docker compose exec app composer pint
+docker compose exec app composer pint:test
+```
+
+---
+
+## PHPStan (static analysis)
+
+[PHPStan](https://phpstan.org/) + [Larastan](https://github.com/larastan/larastan) finds bugs without running the app.
+
+### Run analysis
+
+```bash
+docker compose exec app ./vendor/bin/phpstan analyse
+```
+
+### Via Composer
+
+```bash
+docker compose exec app composer phpstan
+```
+
+Config: [`phpstan.neon`](phpstan.neon) (level 5, scans `app/`)
+
+---
+
+## Other useful commands
+
+```bash
+# Artisan
+docker compose exec app php artisan migrate
+docker compose exec app php artisan migrate:fresh --seed
+docker compose exec app php artisan tinker
+
+# Tests
+docker compose exec app php artisan test
+
+# Rebuild frontend assets (after CSS/JS changes)
+docker compose exec app npm run build
+
+# Composer
+docker compose exec app composer install
+docker compose exec app composer update
+```
+
+---
+
+## Services
+
+| Service | Container | Port | Purpose |
+|---------|-----------|------|---------|
+| `nginx` | ecomshop-nginx | **8080** → 80 | Web server |
+| `app` | ecomshop-app | 9000 (internal) | PHP-FPM + Composer + Node |
+| `pgsql` | ecomshop-pgsql | 5432 (internal) | PostgreSQL |
+| `redis` | ecomshop-redis | 6379 (internal) | Cache, sessions, queue |
+
+---
+
+## Project structure (Docker)
+
+```
+docker/
+├── nginx/
+│   └── default.conf      # Nginx site config
+└── php/
+    ├── Dockerfile        # PHP 8.4 + extensions + Node
+    └── entrypoint.sh     # install deps, build assets, migrate
+docker-compose.yml
+.dockerignore
+pint.json
+phpstan.neon
+```
+
+---
+
+## Troubleshooting
+
+### Port 8080 already in use
+
+Change the port in `docker-compose.yml`:
+
+```yaml
+nginx:
+  ports:
+    - "8888:80"   # use http://localhost:8888
+```
+
+### Permission errors (Linux)
+
+```bash
+sudo chown -R $USER:$USER storage bootstrap/cache
+```
+
+### Fresh start (reset database)
+
+```bash
+docker compose down -v
+docker compose up -d --build
+```
+
+### Rebuild assets only
+
+```bash
+docker compose exec app npm run build
+```
+
+---
+
+## Docker vs Vercel
+
+| | Docker (local) | Vercel (production) |
+|--|----------------|-------------------|
+| Database | PostgreSQL in container | Neon / Supabase |
+| Assets | Built in entrypoint | Built in `composer vercel` |
+| Redis | Included | Upstash |
+| Pint / PHPStan | `docker compose exec app ...` | Run locally or in CI |
+
+---
+
+*See also: [ARCHITECTURE.md](ARCHITECTURE.md)*
