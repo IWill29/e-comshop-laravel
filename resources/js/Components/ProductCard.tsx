@@ -8,7 +8,7 @@ interface ProductCardProps {
     priority?: boolean;
 }
 
-export default function ProductCard({ product, priority = false }: ProductCardProps) {
+export default function ProductCard({ product, priority = false }: Readonly<ProductCardProps>) {
     const price = formatPrice(product.price);
     const compareAtPriceFormatted = product.compareAtPrice
         ? formatPrice(product.compareAtPrice)

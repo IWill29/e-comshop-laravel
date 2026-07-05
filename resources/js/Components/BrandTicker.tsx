@@ -4,7 +4,7 @@ interface BrandTickerProps {
     brands?: readonly string[];
 }
 
-function TickerTrack({ brands, ariaHidden = false }: { brands: readonly string[]; ariaHidden?: boolean }) {
+function TickerTrack({ brands, ariaHidden = false }: Readonly<{ brands: readonly string[]; ariaHidden?: boolean }>) {
     return (
         <ul
             className="flex shrink-0 animate-marquee items-center gap-10 pr-10 group-hover:[animation-play-state:paused] motion-reduce:animate-none sm:gap-14 sm:pr-14"
@@ -22,7 +22,7 @@ function TickerTrack({ brands, ariaHidden = false }: { brands: readonly string[]
     );
 }
 
-export default function BrandTicker({ brands = STORE_BRANDS }: BrandTickerProps) {
+export default function BrandTicker({ brands = STORE_BRANDS }: Readonly<BrandTickerProps>) {
     const track = [...brands];
 
     return (
