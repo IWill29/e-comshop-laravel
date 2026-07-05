@@ -22,15 +22,22 @@ function buildQueryParams(filters: Partial<CatalogFilters>): Record<string, stri
     if (filters.sort && filters.sort !== 'newest') {
         params.sort = filters.sort;
     }
+    if (filters.search) {
+        params.q = filters.search;
+    }
 
     return params;
 }
 
-export function useCatalogFilters(baseUrl: string, filters: CatalogFilters) {
+export function useCatalogFilters(
+    baseUrl: string,
+    filters: CatalogFilters,
+    preserved: Record<string, string> = {},
+) {
     const applyFilters = (updates: Partial<CatalogFilters>) => {
         const next = { ...filters, ...updates };
 
-        router.get(baseUrl, buildQueryParams(next), {
+        router.get(baseUrl, { ...preserved, ...buildQueryParams(next) }, {
             preserveState: true,
             preserveScroll: true,
             replace: true,
@@ -38,7 +45,7 @@ export function useCatalogFilters(baseUrl: string, filters: CatalogFilters) {
     };
 
     const clearFilters = () => {
-        router.get(baseUrl, {}, {
+        router.get(baseUrl, preserved, {
             preserveState: true,
             preserveScroll: true,
             replace: true,

@@ -82,7 +82,42 @@ class Product extends Model
             ->when(
                 $filters->size !== null,
                 fn (Builder $builder): Builder => $builder->whereJsonContains('sizes', $filters->size),
+            )
+            ->when(
+                $filters->search !== null,
+                fn (Builder $builder): Builder => $builder->search($filters->search),
+            )
+            ->when(
+                $filters->onSaleOnly,
+                fn (Builder $builder): Builder => $builder->onSale(),
             );
+    }
+
+    /**
+     * @param  Builder<Product>  $query
+     * @return Builder<Product>
+     */
+    public function scopeOnSale(Builder $query): Builder
+    {
+        return $query
+            ->whereNotNull('compare_at_price')
+            ->whereColumn('compare_at_price', '>', 'price');
+    }
+
+    /**
+     * @param  Builder<Product>  $query
+     * @return Builder<Product>
+     */
+    public function scopeSearch(Builder $query, string $term): Builder
+    {
+        $like = '%'.addcslashes($term, '%_\\').'%';
+
+        return $query->where(function (Builder $builder) use ($like): void {
+            $builder
+                ->where('name', 'like', $like)
+                ->orWhere('brand', 'like', $like)
+                ->orWhere('sku', 'like', $like);
+        });
     }
 
     /**

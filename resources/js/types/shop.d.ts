@@ -30,6 +30,21 @@ export interface ProductDetail extends Product {
     sizes: number[];
 }
 
+export interface CartItem {
+    key: string;
+    productId: number;
+    name: string;
+    slug: string;
+    brand: string;
+    color: string;
+    imageUrl: string;
+    size: number;
+    quantity: number;
+    unitPrice: number;
+    lineTotal: number;
+    maxQuantity: number;
+}
+
 export interface CatalogFilters {
     gender: string | null;
     brand: string | null;
@@ -37,6 +52,7 @@ export interface CatalogFilters {
     maxPrice: number | null;
     size: number | null;
     sort: string;
+    search?: string | null;
 }
 
 export interface FilterOptions {
@@ -81,10 +97,22 @@ export type ShopIndexPageProps = {
     filters: CatalogFilters;
     filterOptions: FilterOptions;
     categories: Category[];
+    pageTitle?: string | null;
+    pageSubtitle?: string | null;
+};
+
+export type ShopSearchPageProps = ShopIndexPageProps & {
+    query: string;
 };
 
 export type ProductShowPageProps = {
     product: ProductDetail;
+};
+
+export type CartIndexPageProps = {
+    items: CartItem[];
+    subtotal: number;
+    itemCount: number;
 };
 
 export type HomePageProps = {

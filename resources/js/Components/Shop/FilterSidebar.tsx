@@ -8,6 +8,7 @@ interface FilterSidebarProps {
     filters: CatalogFilters;
     filterOptions: FilterOptions;
     mode?: 'mobile' | 'desktop';
+    preservedQueryParams?: Record<string, string>;
 }
 
 const sortOptions = [
@@ -27,15 +28,21 @@ function FilterFields({
     baseUrl,
     filters,
     filterOptions,
+    preservedQueryParams = {},
     onNavigate,
 }: FilterSidebarProps & { onNavigate?: () => void }) {
-    const { applyFilters, clearFilters } = useCatalogFilters(baseUrl, filters);
+    const { applyFilters, clearFilters } = useCatalogFilters(
+        baseUrl,
+        filters,
+        preservedQueryParams,
+    );
     const hasActiveFilters =
         filters.gender !== null ||
         filters.brand !== null ||
         filters.minPrice !== null ||
         filters.maxPrice !== null ||
         filters.size !== null ||
+        filters.search != null ||
         filters.sort !== 'newest';
 
     const handleChange = (updates: Partial<CatalogFilters>) => {

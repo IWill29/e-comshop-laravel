@@ -21,6 +21,8 @@ readonly class CatalogFiltersData
         public ?int $maxPrice,
         public ?int $size,
         public string $sort,
+        public ?string $search = null,
+        public bool $onSaleOnly = false,
     ) {}
 
     public static function fromRequest(Request $request, ?Category $category = null): self
@@ -28,6 +30,7 @@ readonly class CatalogFiltersData
         $sort = $request->string('sort')->toString();
         $gender = $request->string('gender')->toString();
         $brand = $request->string('brand')->toString();
+        $search = trim($request->string('q')->toString());
 
         return new self(
             categorySlug: $category?->slug,
@@ -37,6 +40,40 @@ readonly class CatalogFiltersData
             maxPrice: self::nullableInt($request->input('max_price')),
             size: self::nullableInt($request->input('size')),
             sort: in_array($sort, self::SORT_OPTIONS, true) ? $sort : 'newest',
+            search: $search !== '' ? $search : null,
+        );
+    }
+
+    public static function forSale(Request $request): self
+    {
+        $filters = self::fromRequest($request);
+
+        return new self(
+            categorySlug: $filters->categorySlug,
+            gender: $filters->gender,
+            brand: $filters->brand,
+            minPrice: $filters->minPrice,
+            maxPrice: $filters->maxPrice,
+            size: $filters->size,
+            sort: $filters->sort,
+            search: $filters->search,
+            onSaleOnly: true,
+        );
+    }
+
+    public static function forNewArrivals(Request $request): self
+    {
+        $filters = self::fromRequest($request);
+
+        return new self(
+            categorySlug: $filters->categorySlug,
+            gender: $filters->gender,
+            brand: $filters->brand,
+            minPrice: $filters->minPrice,
+            maxPrice: $filters->maxPrice,
+            size: $filters->size,
+            sort: 'newest',
+            search: $filters->search,
         );
     }
 
@@ -52,6 +89,7 @@ readonly class CatalogFiltersData
             'maxPrice' => $this->maxPrice,
             'size' => $this->size,
             'sort' => $this->sort,
+            'search' => $this->search,
         ];
     }
 
@@ -62,6 +100,7 @@ readonly class CatalogFiltersData
             || $this->minPrice !== null
             || $this->maxPrice !== null
             || $this->size !== null
+            || $this->search !== null
             || $this->sort !== 'newest';
     }
 

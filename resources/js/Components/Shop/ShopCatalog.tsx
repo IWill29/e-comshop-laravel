@@ -19,6 +19,7 @@ interface ShopCatalogProps {
     filters: CatalogFilters;
     filterOptions: FilterOptions;
     categories: Category[];
+    preservedQueryParams?: Record<string, string>;
 }
 
 export default function ShopCatalog({
@@ -30,6 +31,7 @@ export default function ShopCatalog({
     filters,
     filterOptions,
     categories,
+    preservedQueryParams = {},
 }: Readonly<ShopCatalogProps>) {
     const isEmpty = products.data.length === 0;
 
@@ -82,6 +84,7 @@ export default function ShopCatalog({
                         baseUrl={baseUrl}
                         filters={filters}
                         filterOptions={filterOptions}
+                        preservedQueryParams={preservedQueryParams}
                     />
                 </div>
             </div>
@@ -107,6 +110,7 @@ export default function ShopCatalog({
                         baseUrl={baseUrl}
                         filters={filters}
                         filterOptions={filterOptions}
+                        preservedQueryParams={preservedQueryParams}
                     />
                 </div>
 
