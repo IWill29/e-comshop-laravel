@@ -1,0 +1,10 @@
+[
+    {"name": "Men's Shoes", "slug": "mens"},
+    {"name": "Women's Shoes", "slug": "womens"},
+    {"name": "Kids' Shoes", "slug": "kids"},
+    {"name": "Sneakers", "slug": "sneakers"},
+    {"name": "Boots", "slug": "boots"},
+    {"name": "Sandals", "slug": "sandals"},
+    {"name": "Running", "slug": "running"},
+    {"name": "Casual", "slug": "casual"}
+]
