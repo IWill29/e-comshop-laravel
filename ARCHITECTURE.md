@@ -10,13 +10,13 @@ E-commerce demo for **paradit-x.com** — Laravel 13, Inertia + React, Stripe, V
 
 Single source of truth for project completion. Legend: `[x]` done · `[~]` partial · `[ ]` not started.
 
-**Overall:** ~35% complete (Phase 1 database layer done; shop UI not started)
+**Overall:** ~42% complete (Phase 0 foundation done; Home storefront live; cart/checkout/Stripe pending)
 
 
 | Phase                                                            | Progress | Status      |
 | ---------------------------------------------------------------- | -------- | ----------- |
-| **Phase 0** — Foundation (Laravel, Inertia, auth, Vercel config) | 18 / 20  | In progress |
-| **Phase 1** — MVP demo (DB, shop UI, Stripe)                     | 7 / 14   | In progress |
+| **Phase 0** — Foundation (Laravel, Inertia, auth, Vercel config) | 20 / 20  | **Done**    |
+| **Phase 1** — MVP demo (DB, shop UI, Stripe)                     | 8 / 14   | In progress |
 | **Phase 2** — Polish (Redis, CDN, queue, tests)                  | 2 / 12   | Not started |
 | **Phase 3** — Showcase (premium UI, CI/CD, domain)               | 0 / 6    | Not started |
 
@@ -27,48 +27,48 @@ Single source of truth for project completion. Legend: `[x]` done · `[~]` parti
 
 #### Stack & tooling
 
-- Laravel 13 skeleton (`laravel/framework ^13`)
-- PHP 8.3+
-- Breeze + Inertia + React (`react --typescript`)
-- `inertiajs/inertia-laravel` + `@inertiajs/react`
-- Vite 7 + `@vitejs/plugin-react`
-- TypeScript (`resources/js/app.tsx`)
-- Tailwind CSS + `@tailwindcss/forms`
-- Ziggy route helpers (`tightenco/ziggy`)
-- `npm run build` → `public/build/` committed
-- PHPStan + Larastan configured (`composer phpstan`)
-- Laravel Pint configured (`composer pint`)
-- Docker Compose (local PostgreSQL + Redis) — `docker-compose.yml`
-- Pest (using PHPUnit for now)
+- [x] Laravel 13 skeleton (`laravel/framework ^13`)
+- [x] PHP 8.3+
+- [x] Breeze + Inertia + React (`react --typescript`)
+- [x] `inertiajs/inertia-laravel` + `@inertiajs/react`
+- [x] Vite 7 + `@vitejs/plugin-react`
+- [x] TypeScript (`resources/js/app.tsx`)
+- [x] Tailwind CSS + `@tailwindcss/forms`
+- [x] Ziggy route helpers (`tightenco/ziggy`)
+- [x] `npm run build` → `public/build/` committed
+- [x] PHPStan + Larastan configured (`composer phpstan`)
+- [x] Laravel Pint configured (`composer pint`)
+- [x] Docker Compose (local PostgreSQL + Redis) — `docker-compose.yml`
+- [ ] Pest (using PHPUnit for now)
 
 #### Inertia & frontend base
 
-- `HandleInertiaRequests` middleware registered
-- `resources/views/app.blade.php` root template (`@inertia`, `@vite`)
-- `createInertiaApp` + page resolution (`Pages/**/*.tsx`)
-- Shared `auth.user` prop
-- Shared `cartCount` prop (shop not built)
-- `ShopLayout.tsx` storefront layout
+- [x] `HandleInertiaRequests` middleware registered
+- [x] `resources/views/app.blade.php` root template (`@inertia`, `@vite`)
+- [x] `createInertiaApp` + page resolution (`Pages/**/*.tsx`)
+- [x] Shared `auth.user` prop
+- [ ] Shared `cartCount` prop (shop not built)
+- [x] `ShopLayout.tsx` storefront layout
 
 #### Auth (Breeze)
 
-- Login / Register / Logout
-- Forgot password / Reset password
-- Email verification flow (optional, not enforced on User model)
-- Profile edit / password update / delete account
-- `GuestLayout` + `AuthenticatedLayout`
-- Auth feature tests (25 passing)
+- [x] Login / Register / Logout
+- [x] Forgot password / Reset password
+- [x] Email verification flow (optional, not enforced on User model)
+- [x] Profile edit / password update / delete account
+- [x] `GuestLayout` + `AuthenticatedLayout`
+- [x] Auth feature tests (26 passing)
 
 #### Deployment prep
 
-- `vercel.json` (PHP serverless + static assets)
-- `api/index.php` Vercel entry
-- Trust proxies (`bootstrap/app.php`)
-- Health check route `/up`
-- `LOG_CHANNEL=stderr` in Vercel env
-- `composer run vercel` deploy script
+- [x] `vercel.json` (PHP serverless + static assets)
+- [x] `api/index.php` Vercel entry
+- [x] Trust proxies (`bootstrap/app.php`)
+- [x] Health check route `/up`
+- [x] `LOG_CHANNEL=stderr` in Vercel env
+- [x] `composer run vercel` deploy script
 - [x] `.env.example` documented (PostgreSQL, Redis, Stripe placeholders)
-- Production env vars set in Vercel Dashboard
+- [ ] Production env vars set in Vercel Dashboard
 
 ---
 
@@ -79,97 +79,97 @@ Single source of truth for project completion. Legend: `[x]` done · `[~]` parti
 - [~] PostgreSQL configured for production (Neon / Supabase) — `.env.example` + `DB_URL` documented
 - [x] `categories` migration + model
 - [x] `products` migration + model (price in cents)
-- [x] `orders` + `order_items` migrations + models
-- [x] Seeders (~20 demo shoes, 8 categories)
+- [x] `orders` + `order_items` migrations + models (single `create_ecommerce_tables` migration)
+- [x] Seeders (~20 demo shoes, 8 categories) — JSON in `database/data/`
 - [x] Factories for products/orders
 - [x] `OrderStatus` / `PaymentStatus` enums
-- `CartService` (session or Redis)
-- Actions: `AddToCartAction`, `CreateCheckoutSessionAction`
-- DTOs: `CheckoutData`, `CartItemData`
+- [ ] `CartService` (session or Redis)
+- [ ] Actions: `AddToCartAction`, `CreateCheckoutSessionAction`
+- [ ] DTOs: `CheckoutData`, `CartItemData`
 
 #### Storefront pages (MVP)
 
-- Home (`/` → `Pages/Home.tsx`)
-- Shop catalog (`/shop`)
-- Category page (`/shop/{slug}`)
-- Product detail (`/products/{slug}`) + size selector
-- Cart (`/cart`)
-- Checkout (`/checkout`)
-- Order success / cancel pages
+- [x] Home (`/` → `Pages/Home.tsx`)
+- [ ] Shop catalog (`/shop`)
+- [ ] Category page (`/shop/{slug}`)
+- [ ] Product detail (`/products/{slug}`) + size selector
+- [ ] Cart (`/cart`)
+- [ ] Checkout (`/checkout`)
+- [ ] Order success / cancel pages
 
 #### Stripe
 
-- `stripe/stripe-php` installed
-- Checkout Session (test mode)
-- Webhook `checkout.session.completed`
-- Webhook signature verification
-- Stock decrease after payment only
+- [ ] `stripe/stripe-php` installed
+- [ ] Checkout Session (test mode)
+- [ ] Webhook `checkout.session.completed`
+- [ ] Webhook signature verification
+- [ ] Stock decrease after payment only
 
 ---
 
 ### Phase 2 — Professional polish
 
-- Upstash Redis (sessions, cache, cart on Vercel)
-- Cloudinary / S3 + CDN for product images
-- External queue worker (Railway / Fly.io)
-- Order confirmation email (queued)
-- Feature tests: cart, checkout, webhook
-- Rate limiting on checkout + webhook
-- Sentry / Flare error tracking
-- Search, Sale, New arrivals pages
-- About, Contact, Shipping & returns
-- My orders + order detail pages
-- 404 page
-- Premium shop UI (indigo accent, Inter font)
+- [ ] Upstash Redis (sessions, cache, cart on Vercel)
+- [ ] Cloudinary / S3 + CDN for product images
+- [ ] External queue worker (Railway / Fly.io)
+- [ ] Order confirmation email (queued)
+- [ ] Feature tests: cart, checkout, webhook
+- [ ] Rate limiting on checkout + webhook
+- [ ] Sentry / Flare error tracking
+- [ ] Search, Sale, New arrivals pages
+- [ ] About, Contact, Shipping & returns
+- [ ] My orders + order detail pages
+- [ ] 404 page
+- [~] Premium shop UI (indigo accent, Syne/Outfit fonts — Home + layout done; catalog pages pending)
 
 ---
 
 ### Phase 3 — Production showcase
 
-- GitHub Actions (test → deploy Vercel)
-- Custom domain `paradit-x.com` + SSL
-- Privacy / Terms / Cookie policy pages
-- Uptime monitoring (Better Stack / UptimeRobot)
-- Stripe live mode + restricted API keys
-- Vercel Cron or external scheduler
+- [ ] GitHub Actions (test → deploy Vercel)
+- [ ] Custom domain `paradit-x.com` + SSL
+- [ ] Privacy / Terms / Cookie policy pages
+- [ ] Uptime monitoring (Better Stack / UptimeRobot)
+- [ ] Stripe live mode + restricted API keys
+- [ ] Vercel Cron or external scheduler
 
 ---
 
 ### Backend architecture (Laravel Way)
 
-- [~] Thin controllers (auth only; shop controllers missing)
+- [~] Thin controllers (`HomeController` + auth; cart/checkout controllers missing)
 - [~] Form Requests (auth/profile only)
 - [x] Enums for order/payment status
-- DTOs for checkout/Stripe
-- Actions for business operations
-- Events + Listeners (order paid → email, stock)
-- Policies (`OrderPolicy`, `ProductPolicy`)
-- `declare(strict_types=1)` on all PHP files
+- [ ] DTOs for checkout/Stripe
+- [ ] Actions for business operations
+- [ ] Events + Listeners (order paid → email, stock)
+- [ ] Policies (`OrderPolicy`, `ProductPolicy`)
+- [~] `declare(strict_types=1)` on all PHP files (e-commerce domain done)
 
 ---
 
 ### Security checklist
 
-- CSRF protection (Laravel default)
-- Trust proxies (Vercel / load balancers)
+- [x] CSRF protection (Laravel default)
+- [x] Trust proxies (Vercel / load balancers)
 - [~] Input validation (auth forms only)
-- Mass assignment protection (`User` fillable/hidden)
-- Secrets in env, not git (`.env` gitignored)
-- Rate limiting on public checkout/webhook routes
-- Stripe webhook signature verification
-- Security headers (`X-Frame-Options`, etc.)
+- [x] Mass assignment protection (`User` + e-commerce models)
+- [x] Secrets in env, not git (`.env` gitignored)
+- [ ] Rate limiting on public checkout/webhook routes
+- [ ] Stripe webhook signature verification
+- [ ] Security headers (`X-Frame-Options`, etc.)
 
 ---
 
 ### Quality & ops
 
-- Auth + profile feature tests (PHPUnit)
-- Health endpoint `/up`
-- E-commerce feature tests
-- Unit tests (CartService, pricing)
-- CI/CD pipeline
-- Error tracking in production
-- Structured logging (order ID, session ID)
+- [x] Auth + profile feature tests (PHPUnit, 26 passing)
+- [x] Health endpoint `/up`
+- [ ] E-commerce feature tests
+- [ ] Unit tests (CartService, pricing)
+- [ ] CI/CD pipeline
+- [ ] Error tracking in production
+- [ ] Structured logging (order ID, session ID)
 
 ---
 
@@ -179,11 +179,13 @@ Single source of truth for project completion. Legend: `[x]` done · `[~]` parti
 | Ready                                 | Missing                                |
 | ------------------------------------- | -------------------------------------- |
 | Laravel 13 + Breeze + Inertia + React | Shop / Cart / Checkout pages           |
-| Auth UI + tests (25 passing)          | Stripe integration                     |
+| Auth UI + tests (26 passing)          | Stripe integration                     |
 | Vercel config + `public/build`        | PostgreSQL in Vercel Dashboard (Neon)  |
-| E-commerce domain (models, migrations, seeders) | Redis, CDN, queue worker       |
+| E-commerce domain (models, migrations, JSON seeders) | Redis, CDN, queue worker       |
+| Home page (`HomeController`, `ProductResource`, `CategoryResource`) | Catalog, product detail, cart |
+| `ShopLayout` + shop components (`ProductCard`, `CategoryTile`, brand ticker) | Shared `cartCount` prop |
+| Docker local dev (PG + Redis, `node_modules` volume) |                                        |
 | Trust proxies, `/up` health check     | CI/CD, monitoring, custom domain       |
-| Docker local dev (PG + Redis)         |                                        |
 
 
 ---
@@ -234,7 +236,7 @@ app/
 | 2.5  | **Actions**            | `CreateCheckoutSessionAction`, `AddToCartAction` | Not started            |
 | 2.6  | **Events + Listeners** | Order paid → email, stock update                 | Not started            |
 | 2.7  | **Policies**           | `OrderPolicy`, `ProductPolicy`                   | Not started            |
-| 2.8  | **Strict types**       | `declare(strict_types=1)` in all PHP files       | Not started            |
+| 2.8  | **Strict types**       | `declare(strict_types=1)` in PHP files           | Partial (e-commerce)   |
 | 2.9  | **Service Container**  | Interface binding (`PaymentGatewayInterface`)    | Not started            |
 | 2.10 | **Config, not .env**   | `config('services.stripe.key')`                  | Not started            |
 
@@ -441,8 +443,8 @@ Optional SSR (not required for MVP): `php artisan breeze:install react --ssr` th
 | 4.2 | `products`     | price (cents), stock, slug, image_url   | slug, category_id, is_active | **Done**                        |
 | 4.3 | `orders`       | status, email, stripe_session_id, total | stripe_session_id UNIQUE     | **Done**                          |
 | 4.4 | `order_items`  | order_id, product_id, qty, unit_price   | order_id                     | **Done**                          |
-| 4.5 | **Migrations** | FK, indexes, soft deletes (orders)      | —                            | **Done** (e-commerce tables)      |
-| 4.6 | **Seeders**    | ~20 English demo products               | —                            | **Done** (21 products, 8 cats)    |
+| 4.5 | **Migrations** | FK, indexes, soft deletes (orders)      | —                            | **Done** (`create_ecommerce_tables`) |
+| 4.6 | **Seeders**    | ~20 English demo products               | —                            | **Done** (JSON, 21 products, 8 cats) |
 | 4.7 | **Factories**  | For tests                               | —                            | **Done**                          |
 
 
@@ -491,9 +493,9 @@ flowchart TD
 | 5.2 | Product page | Stock check, quantity limits                | Not started |
 | 5.3 | Cart         | Session/Redis, stock validation at checkout | Not started |
 | 5.4 | Checkout     | Guest checkout + optional auth              | Not started |
-| 5.5 | Orders       | Status enum, idempotency                    | Not started |
+| 5.5 | Orders       | Status enum, idempotency                    | Partial (enum + models) |
 | 5.6 | Stock        | Decrease only after payment (webhook)       | Not started |
-| 5.7 | Prices       | Integer cents (not float)                   | Not started |
+| 5.7 | Prices       | Integer cents (not float)                   | **Done** (schema) |
 
 
 ---
@@ -525,7 +527,7 @@ flowchart TD
 | 7.2 | **CSRF**             | Laravel default (webhook exception)         | **Done**         |
 | 7.3 | **Rate limiting**    | Checkout, webhook, API                      | Not started      |
 | 7.4 | **Input validation** | Form Requests                               | Partial (auth)   |
-| 7.5 | **Mass assignment**  | `$fillable` / DTO                           | **Done** (User)  |
+| 7.5 | **Mass assignment**  | `$fillable` / DTO                           | **Done** (User + shop models) |
 | 7.6 | **Secrets**          | Vercel env only, never git                  | **Done**         |
 | 7.7 | **Stripe keys**      | Restricted API key (RAK) in production      | Not started      |
 | 7.8 | **Trust proxies**    | Configured in `bootstrap/app.php`           | **Done**         |
@@ -576,7 +578,7 @@ flowchart TD
 | 10.4 | **Pest.php**        | Modern syntax                      | Not started (PHPUnit)        |
 | 10.5 | **GitHub Actions**  | Test → deploy to Vercel            | Not started                  |
 | 10.6 | **Pre-deploy**      | `composer test` + `npm run build`  | Partial (auth tests + build) |
-| 10.7 | **Auth tests**      | Login, register, password, profile | **Done** (25 tests)          |
+| 10.7 | **Auth tests**      | Login, register, password, profile | **Done** (26 tests)          |
 | 10.8 | **Static analysis** | PHPStan / Larastan                 | **Done** (configured)        |
 | 10.9 | **Code style**      | Laravel Pint                       | **Done** (configured)        |
 
@@ -621,7 +623,7 @@ Railway/Fly.io  → Queue worker (webhook, emails)
 ### Phase 1 — MVP demo (show clients)
 
 1. ~~Breeze + Inertia + React~~ ✓
-2. PostgreSQL (Neon) + migrations + seeders
+2. ~~PostgreSQL (Neon) + migrations + seeders~~ ✓ (JSON seed data, consolidated migration)
 3. Shop, Cart, Checkout UI
 4. Stripe Checkout (test mode)
 5. Webhook → order paid
@@ -792,48 +794,48 @@ Footer links to 22–24 on every page.
 
 #### Storefront (MVP)
 
-- Home — hero, 3–4 featured products, category tiles
-- Shop — grid, filters, pagination
-- Category — filtered catalog per slug
-- Product detail — size selector, gallery, add to cart
-- Cart — update qty, remove, proceed to checkout
-- Checkout — guest form + Stripe redirect
-- Success / Cancel — post-payment states
+- [x] Home — hero, 3–4 featured products, category tiles, new arrivals, brand ticker
+- [ ] Shop — grid, filters, pagination
+- [ ] Category — filtered catalog per slug
+- [ ] Product detail — size selector, gallery, add to cart
+- [ ] Cart — update qty, remove, proceed to checkout
+- [ ] Checkout — guest form + Stripe redirect
+- [ ] Success / Cancel — post-payment states
 
 #### Catalog & discovery (Phase 2)
 
-- Search results page
-- Sale / New arrivals collection pages
-- Size guide (standalone + modal on product)
-- 404 page
+- [ ] Search results page
+- [ ] Sale / New arrivals collection pages
+- [ ] Size guide (standalone + modal on product)
+- [ ] 404 page
 
 #### Trust & content (Phase 2)
 
-- About
-- Contact
-- Shipping & returns
+- [ ] About
+- [ ] Contact
+- [ ] Shipping & returns
 
 #### Account (Phase 2)
 
-- Login / Register / Forgot password (Breeze)
-- Profile edit / password / delete account (Breeze)
-- My orders list
-- Order detail
+- [x] Login / Register / Forgot password (Breeze)
+- [x] Profile edit / password / delete account (Breeze)
+- [ ] My orders list
+- [ ] Order detail
 
 #### Legal (Phase 3)
 
-- Privacy policy
-- Terms of service
-- Cookie policy
+- [ ] Privacy policy
+- [ ] Terms of service
+- [ ] Cookie policy
 
 #### Layout & UX
 
-- Breeze auth layouts (`GuestLayout`, `AuthenticatedLayout`)
-- `ShopLayout` with header + footer
-- Mobile-responsive shop navigation
-- Cart count in header (shared Inertia prop)
-- English copy throughout (shop)
-- Premium UI (rounded cards, indigo accent, Inter font)
+- [x] Breeze auth layouts (`GuestLayout`, `AuthenticatedLayout`)
+- [x] `ShopLayout` with header + footer
+- [x] Mobile-responsive shop navigation
+- [ ] Cart count in header (shared Inertia prop)
+- [~] English copy throughout (shop) — Home done; catalog pages pending
+- [~] Premium UI (rounded cards, indigo accent, Syne/Outfit fonts) — Home + components done
 
 ---
 
@@ -846,19 +848,22 @@ resources/js/
 ├── app.tsx
 ├── bootstrap.ts
 ├── Components/              # Breeze UI + shop components
-│   ├── ProductCard.tsx      # to add
+│   ├── ProductCard.tsx      # ✓
+│   ├── CategoryTile.tsx     # ✓
+│   ├── BrandLogo.tsx        # ✓
+│   ├── BrandTicker.tsx      # ✓
 │   ├── SizeSelector.tsx     # to add
 │   └── …
 ├── Layouts/
 │   ├── AuthenticatedLayout.tsx   # Breeze ✓
 │   ├── GuestLayout.tsx           # Breeze ✓
-│   └── ShopLayout.tsx            # to add
+│   └── ShopLayout.tsx            # ✓
 ├── Pages/
-│   ├── Welcome.tsx               # Breeze ✓ (replace with Home.tsx)
+│   ├── Welcome.tsx               # Breeze ✓ (legacy; `/` uses Home.tsx)
 │   ├── Dashboard.tsx             # Breeze ✓
 │   ├── Auth/                     # Breeze ✓ (Login, Register, …)
 │   ├── Profile/                  # Breeze ✓
-│   ├── Home.tsx                  # to add
+│   ├── Home.tsx                  # ✓
 │   ├── Shop/
 │   │   ├── Index.tsx
 │   │   ├── Category.tsx
@@ -896,46 +901,46 @@ Quick verification before production. See **Architecture Progress Checklist** ab
 
 ### Backend
 
-- [~] Controllers are thin; logic lives in Actions/Services (auth only)
-- [~] Enums + DTOs + Form Requests (auth/profile only)
-- `declare(strict_types=1)` on all PHP files
-- Events/Listeners for order lifecycle
-- Policies for authorization (shop)
+- [~] Controllers are thin; logic lives in Actions/Services (`HomeController` + auth)
+- [~] Enums + DTOs + Form Requests (enums done; DTOs/requests partial)
+- [~] `declare(strict_types=1)` on all PHP files (e-commerce domain done)
+- [ ] Events/Listeners for order lifecycle
+- [ ] Policies for authorization (shop)
 
 ### Infrastructure
 
-- External DB (not SQLite in production)
-- Redis for sessions/cache (not file driver) — Docker local ✓
-- CDN for images (not `/storage` on Vercel)
-- Queue worker for webhooks and emails
-- Secrets only in env, never in git
-- Custom domain + SSL configured
+- [~] External DB (not SQLite in production) — `.env.example` ready; Neon in Vercel pending
+- [ ] Redis for sessions/cache (not file driver) — Docker local ✓
+- [ ] CDN for images (not `/storage` on Vercel)
+- [ ] Queue worker for webhooks and emails
+- [x] Secrets only in env, never in git
+- [ ] Custom domain + SSL configured
 
 ### E-commerce
 
-- Prices stored as integer cents
-- Stock updated only after Stripe webhook
-- Cart validated against stock at checkout
-- Order status managed via enum
-- Stripe webhook signature verified
+- [x] Prices stored as integer cents
+- [ ] Stock updated only after Stripe webhook
+- [ ] Cart validated against stock at checkout
+- [x] Order status managed via enum
+- [ ] Stripe webhook signature verified
 
 ### Frontend
 
-- Breeze + Inertia + React (auth, layouts, TypeScript)
-- Shop layout + storefront pages
-- Reusable shop UI components
-- Production assets built and committed (`public/build`)
-- Mobile-first, premium SaaS UI (shop)
-- All MVP shoe store pages (see §13 checklist)
+- [x] Breeze + Inertia + React (auth, layouts, TypeScript)
+- [ ] Shop layout + storefront pages
+- [ ] Reusable shop UI components
+- [x] Production assets built and committed (`public/build`)
+- [ ] Mobile-first, premium SaaS UI (shop)
+- [ ] All MVP shoe store pages (see §13 checklist)
 
 ### Quality & ops
 
-- Auth feature tests (25 passing)
-- Feature tests for cart, checkout, webhook
-- Rate limiting on public endpoints
-- Error tracking (Sentry/Flare)
-- CI/CD pipeline (GitHub Actions → Vercel)
-- Health check endpoint (`/up`)
+- [x] Auth feature tests (26 passing)
+- [ ] Feature tests for cart, checkout, webhook
+- [ ] Rate limiting on public endpoints
+- [ ] Error tracking (Sentry/Flare)
+- [ ] CI/CD pipeline (GitHub Actions → Vercel)
+- [x] Health check endpoint (`/up`)
 
 ---
 
@@ -943,15 +948,15 @@ Quick verification before production. See **Architecture Progress Checklist** ab
 
 Before first production deploy:
 
-- `APP_KEY` set in Vercel Dashboard
-- `APP_URL=https://paradit-x.com`
-- PostgreSQL credentials configured
-- `VERCEL_FORCE_NO_BUILD_CACHE=1` (if deploy fails after composer update)
-- Stripe test keys + webhook URL configured
-- `public/build` committed to repository
-- `vercel.json` + `api/index.php` configured
-- `composer vercel` build script (migrate + build + optimize)
+- [ ] `APP_KEY` set in Vercel Dashboard
+- [ ] `APP_URL=https://paradit-x.com`
+- [ ] PostgreSQL credentials configured (Neon `DB_URL`)
+- [ ] `VERCEL_FORCE_NO_BUILD_CACHE=1` (if deploy fails after composer update)
+- [ ] Stripe test keys + webhook URL configured
+- [x] `public/build` committed to repository
+- [x] `vercel.json` + `api/index.php` configured
+- [x] `composer vercel` build script (migrate + build + optimize)
 
 ---
 
-*Last updated: July 2026 — Architecture Progress Checklist added; Phase 0 ~90% complete*
+*Last updated: July 2026 — Phase 1 database layer complete (consolidated migration, JSON seeders); shop UI next*
