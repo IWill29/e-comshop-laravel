@@ -10,13 +10,13 @@ E-commerce demo for **paradit-x.com** — Laravel 13, Inertia + React, Stripe, V
 
 Single source of truth for project completion. Legend: `[x]` done · `[~]` partial · `[ ]` not started.
 
-**Overall:** ~35% complete (Phase 1 database layer done; shop UI not started)
+**Overall:** ~42% complete (Phase 0 foundation done; Home storefront live; cart/checkout/Stripe pending)
 
 
 | Phase                                                            | Progress | Status      |
 | ---------------------------------------------------------------- | -------- | ----------- |
-| **Phase 0** — Foundation (Laravel, Inertia, auth, Vercel config) | 19 / 20  | In progress |
-| **Phase 1** — MVP demo (DB, shop UI, Stripe)                     | 7 / 14   | In progress |
+| **Phase 0** — Foundation (Laravel, Inertia, auth, Vercel config) | 20 / 20  | **Done**    |
+| **Phase 1** — MVP demo (DB, shop UI, Stripe)                     | 8 / 14   | In progress |
 | **Phase 2** — Polish (Redis, CDN, queue, tests)                  | 2 / 12   | Not started |
 | **Phase 3** — Showcase (premium UI, CI/CD, domain)               | 0 / 6    | Not started |
 
@@ -48,7 +48,7 @@ Single source of truth for project completion. Legend: `[x]` done · `[~]` parti
 - [x] `createInertiaApp` + page resolution (`Pages/**/*.tsx`)
 - [x] Shared `auth.user` prop
 - [ ] Shared `cartCount` prop (shop not built)
-- [ ] `ShopLayout.tsx` storefront layout
+- [x] `ShopLayout.tsx` storefront layout
 
 #### Auth (Breeze)
 
@@ -89,7 +89,7 @@ Single source of truth for project completion. Legend: `[x]` done · `[~]` parti
 
 #### Storefront pages (MVP)
 
-- [ ] Home (`/` → `Pages/Home.tsx`)
+- [x] Home (`/` → `Pages/Home.tsx`)
 - [ ] Shop catalog (`/shop`)
 - [ ] Category page (`/shop/{slug}`)
 - [ ] Product detail (`/products/{slug}`) + size selector
@@ -120,7 +120,7 @@ Single source of truth for project completion. Legend: `[x]` done · `[~]` parti
 - [ ] About, Contact, Shipping & returns
 - [ ] My orders + order detail pages
 - [ ] 404 page
-- [ ] Premium shop UI (indigo accent, Inter font)
+- [~] Premium shop UI (indigo accent, Syne/Outfit fonts — Home + layout done; catalog pages pending)
 
 ---
 
@@ -137,7 +137,7 @@ Single source of truth for project completion. Legend: `[x]` done · `[~]` parti
 
 ### Backend architecture (Laravel Way)
 
-- [~] Thin controllers (auth only; shop controllers missing)
+- [~] Thin controllers (`HomeController` + auth; cart/checkout controllers missing)
 - [~] Form Requests (auth/profile only)
 - [x] Enums for order/payment status
 - [ ] DTOs for checkout/Stripe
@@ -182,8 +182,10 @@ Single source of truth for project completion. Legend: `[x]` done · `[~]` parti
 | Auth UI + tests (26 passing)          | Stripe integration                     |
 | Vercel config + `public/build`        | PostgreSQL in Vercel Dashboard (Neon)  |
 | E-commerce domain (models, migrations, JSON seeders) | Redis, CDN, queue worker       |
+| Home page (`HomeController`, `ProductResource`, `CategoryResource`) | Catalog, product detail, cart |
+| `ShopLayout` + shop components (`ProductCard`, `CategoryTile`, brand ticker) | Shared `cartCount` prop |
+| Docker local dev (PG + Redis, `node_modules` volume) |                                        |
 | Trust proxies, `/up` health check     | CI/CD, monitoring, custom domain       |
-| Docker local dev (PG + Redis)         |                                        |
 
 
 ---
@@ -792,7 +794,7 @@ Footer links to 22–24 on every page.
 
 #### Storefront (MVP)
 
-- [ ] Home — hero, 3–4 featured products, category tiles
+- [x] Home — hero, 3–4 featured products, category tiles, new arrivals, brand ticker
 - [ ] Shop — grid, filters, pagination
 - [ ] Category — filtered catalog per slug
 - [ ] Product detail — size selector, gallery, add to cart
@@ -829,11 +831,11 @@ Footer links to 22–24 on every page.
 #### Layout & UX
 
 - [x] Breeze auth layouts (`GuestLayout`, `AuthenticatedLayout`)
-- [ ] `ShopLayout` with header + footer
-- [ ] Mobile-responsive shop navigation
+- [x] `ShopLayout` with header + footer
+- [x] Mobile-responsive shop navigation
 - [ ] Cart count in header (shared Inertia prop)
-- [ ] English copy throughout (shop)
-- [ ] Premium UI (rounded cards, indigo accent, Inter font)
+- [~] English copy throughout (shop) — Home done; catalog pages pending
+- [~] Premium UI (rounded cards, indigo accent, Syne/Outfit fonts) — Home + components done
 
 ---
 
@@ -846,19 +848,22 @@ resources/js/
 ├── app.tsx
 ├── bootstrap.ts
 ├── Components/              # Breeze UI + shop components
-│   ├── ProductCard.tsx      # to add
+│   ├── ProductCard.tsx      # ✓
+│   ├── CategoryTile.tsx     # ✓
+│   ├── BrandLogo.tsx        # ✓
+│   ├── BrandTicker.tsx      # ✓
 │   ├── SizeSelector.tsx     # to add
 │   └── …
 ├── Layouts/
 │   ├── AuthenticatedLayout.tsx   # Breeze ✓
 │   ├── GuestLayout.tsx           # Breeze ✓
-│   └── ShopLayout.tsx            # to add
+│   └── ShopLayout.tsx            # ✓
 ├── Pages/
-│   ├── Welcome.tsx               # Breeze ✓ (replace with Home.tsx)
+│   ├── Welcome.tsx               # Breeze ✓ (legacy; `/` uses Home.tsx)
 │   ├── Dashboard.tsx             # Breeze ✓
 │   ├── Auth/                     # Breeze ✓ (Login, Register, …)
 │   ├── Profile/                  # Breeze ✓
-│   ├── Home.tsx                  # to add
+│   ├── Home.tsx                  # ✓
 │   ├── Shop/
 │   │   ├── Index.tsx
 │   │   ├── Category.tsx
@@ -896,7 +901,7 @@ Quick verification before production. See **Architecture Progress Checklist** ab
 
 ### Backend
 
-- [~] Controllers are thin; logic lives in Actions/Services (auth only)
+- [~] Controllers are thin; logic lives in Actions/Services (`HomeController` + auth)
 - [~] Enums + DTOs + Form Requests (enums done; DTOs/requests partial)
 - [~] `declare(strict_types=1)` on all PHP files (e-commerce domain done)
 - [ ] Events/Listeners for order lifecycle
