@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\DTOs\CatalogFiltersData;
 use Database\Factories\ProductFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -32,6 +34,56 @@ class Product extends Model
 {
     /** @use HasFactory<ProductFactory> */
     use HasFactory;
+
+    public function getRouteKeyName(): string
+    {
+        return 'slug';
+    }
+
+    /**
+     * @param  Builder<Product>  $query
+     * @return Builder<Product>
+     */
+    public function scopeActive(Builder $query): Builder
+    {
+        return $query->where('is_active', true);
+    }
+
+    /**
+     * @param  Builder<Product>  $query
+     * @return Builder<Product>
+     */
+    public function scopeCatalogFilter(Builder $query, CatalogFiltersData $filters): Builder
+    {
+        return $query
+            ->when(
+                $filters->categorySlug,
+                fn (Builder $builder): Builder => $builder->whereHas(
+                    'category',
+                    fn (Builder $categoryQuery): Builder => $categoryQuery->where('slug', $filters->categorySlug),
+                ),
+            )
+            ->when(
+                $filters->gender,
+                fn (Builder $builder): Builder => $builder->where('gender', $filters->gender),
+            )
+            ->when(
+                $filters->brand,
+                fn (Builder $builder): Builder => $builder->where('brand', $filters->brand),
+            )
+            ->when(
+                $filters->minPrice !== null,
+                fn (Builder $builder): Builder => $builder->where('price', '>=', $filters->minPrice),
+            )
+            ->when(
+                $filters->maxPrice !== null,
+                fn (Builder $builder): Builder => $builder->where('price', '<=', $filters->maxPrice),
+            )
+            ->when(
+                $filters->size !== null,
+                fn (Builder $builder): Builder => $builder->whereJsonContains('sizes', $filters->size),
+            );
+    }
 
     /**
      * @return BelongsTo<Category, $this>
