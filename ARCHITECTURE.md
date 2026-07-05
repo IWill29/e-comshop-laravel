@@ -93,7 +93,7 @@ Single source of truth for project completion. Legend: `[x]` done · `[~]` parti
 - [x] Shop catalog (`/shop` → `Pages/Shop/Index.tsx` — filters, sort, pagination)
 - [x] Category page (`/shop/{slug}` → same `Pages/Shop/Index.tsx`, optional `category` prop)
 - [~] Product detail (`/products/{slug}` → `Pages/Shop/Show.tsx`) — size selector ✓; add to cart backend pending
-- [ ] Cart (`/cart`)
+- [~] Cart (`/cart`) — UI ✓; CartService backend pending
 - [ ] Checkout (`/checkout`)
 - [ ] Order success / cancel pages
 
@@ -410,7 +410,7 @@ Verify with `php artisan route:list`.
 | #     | Component          | Structure                                                | Status                |
 | ----- | ------------------ | -------------------------------------------------------- | --------------------- |
 | 3.5.1 | **Layout**         | `ShopLayout.tsx` — header, cart, footer                  | **Done**              |
-| 3.5.2 | **Pages**          | `Pages/Shop/`, `Pages/Cart/`, `Pages/Checkout/`          | Partial (Shop + Search/Sale/NewArrivals ✓) |
+| 3.5.2 | **Pages**          | `Pages/Shop/`, `Pages/Cart/`, `Pages/Checkout/`          | Partial (Shop + Search/Sale/NewArrivals ✓; Cart UI ✓) |
 | 3.5.3 | **Components**     | `ProductCard`, `SizeSelector`, `FilterSidebar`, `ProductSearch` | **Done** (catalog + search) |
 | 3.5.4 | **Hooks**          | `useCart`, `useFormatPrice`, `useCatalogFilters`         | Partial (no `useCart`) |
 | 3.5.5 | **Shared props**   | `cartCount`, `flash`, `auth` via `HandleInertiaRequests` | Partial (`auth` only) |
@@ -680,7 +680,7 @@ flowchart LR
 | 2   | **Shop / Catalog**     | `/shop`                    | `Pages/Shop/Index.tsx`       | All products, filters, sort, pagination        | **Done**                              |
 | 3   | **Category**           | `/shop/{category:slug}`    | `Pages/Shop/Index.tsx`       | Shared Index page with `category` prop (variant A) | **Done**                          |
 | 4   | **Product detail**     | `/products/{product:slug}` | `Pages/Shop/Show.tsx`        | Images, price, **size selector**, add to cart  | Partial (UI ✓; cart POST pending)     |
-| 5   | **Cart**               | `/cart`                    | `Pages/Cart/Index.tsx`       | Line items, size/qty, subtotal, checkout CTA   | Not started                           |
+| 5   | **Cart**               | `/cart`                    | `Pages/Cart/Index.tsx`       | Line items, size/qty, subtotal, checkout CTA   | Partial (UI ✓; CartService pending)   |
 | 6   | **Checkout**           | `/checkout`                | `Pages/Checkout/Index.tsx`   | Email, shipping address, order summary         | Not started                           |
 | 7   | **Order success**      | `/checkout/success`        | `Pages/Checkout/Success.tsx` | Thank you, order number, summary               | Not started                           |
 | 8   | **Checkout cancelled** | `/checkout/cancel`         | `Pages/Checkout/Cancel.tsx`  | Payment cancelled, return to cart              | Not started                           |
@@ -799,7 +799,7 @@ Footer links to 22–24 on every page.
 - [x] Shop — grid, filters, pagination
 - [x] Category — filtered catalog per slug (shared `Shop/Index`)
 - [~] Product detail — size selector ✓; gallery (single image); add to cart backend pending
-- [ ] Cart — update qty, remove, proceed to checkout
+- [~] Cart — update qty, remove, proceed to checkout (UI ✓; backend pending)
 - [ ] Checkout — guest form + Stripe redirect
 - [ ] Success / Cancel — post-payment states
 
@@ -880,7 +880,7 @@ resources/js/
 │   │   ├── Sale.tsx              # ✓
 │   │   └── NewArrivals.tsx       # ✓
 │   ├── Cart/
-│   │   └── Index.tsx
+│   │   └── Index.tsx             # ✓ (UI; CartService pending)
 │   ├── Checkout/
 │   │   ├── Index.tsx
 │   │   ├── Success.tsx
@@ -939,7 +939,7 @@ Quick verification before production. See **Architecture Progress Checklist** ab
 - [x] Reusable shop UI components (catalog)
 - [x] Production assets built and committed (`public/build`)
 - [x] Mobile-first, premium SaaS UI (shop catalog + product detail)
-- [~] All MVP shoe store pages (3/7 done — cart/checkout/success/cancel pending)
+- [~] All MVP shoe store pages (4/7 done — cart UI ✓; checkout/success/cancel pending)
 
 ### Quality & ops
 
@@ -967,4 +967,4 @@ Before first production deploy:
 
 ---
 
-*Last updated: July 2026 — Phase 2 catalog discovery complete (`Search`, `Sale`, `NewArrivals`, `ProductSearch`, `ShopTest` ×8); cart/checkout/Stripe next*
+*Last updated: July 2026 — Phase 2 catalog discovery complete (`Search`, `Sale`, `NewArrivals`, `ProductSearch`, `ShopTest` ×8); cart UI ✓; CartService/checkout/Stripe next*
