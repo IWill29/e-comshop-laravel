@@ -10,10 +10,10 @@ import { FormEventHandler } from 'react';
 export default function Login({
     status,
     canResetPassword,
-}: {
+}: Readonly<{
     status?: string;
     canResetPassword: boolean;
-}) {
+}>) {
     const { data, setData, post, processing, errors, reset } = useForm({
         email: '',
         password: '',

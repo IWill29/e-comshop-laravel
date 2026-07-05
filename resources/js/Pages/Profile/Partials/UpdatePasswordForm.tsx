@@ -8,9 +8,9 @@ import { FormEventHandler, useRef } from 'react';
 
 export default function UpdatePasswordForm({
     className = '',
-}: {
+}: Readonly<{
     className?: string;
-}) {
+}>) {
     const passwordInput = useRef<HTMLInputElement>(null);
     const currentPasswordInput = useRef<HTMLInputElement>(null);
 

@@ -5,7 +5,7 @@ import GuestLayout from '@/Layouts/GuestLayout';
 import { Head, useForm } from '@inertiajs/react';
 import { FormEventHandler } from 'react';
 
-export default function ForgotPassword({ status }: { status?: string }) {
+export default function ForgotPassword({ status }: Readonly<{ status?: string }>) {
     const { data, setData, post, processing, errors } = useForm({
         email: '',
     });
