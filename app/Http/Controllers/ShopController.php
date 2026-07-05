@@ -5,11 +5,14 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Actions\ListProductsAction;
+use App\Actions\SearchProductSuggestionsAction;
 use App\DTOs\CatalogFiltersData;
+use App\Enums\CatalogCollection;
 use App\Http\Resources\CategoryResource;
 use App\Http\Resources\ProductResource;
 use App\Models\Category;
 use App\Models\Product;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -18,71 +21,53 @@ class ShopController extends Controller
 {
     public function index(Request $request, ListProductsAction $listProducts): Response
     {
-        return $this->catalog($request, $listProducts);
+        return $this->catalog($request, $listProducts, 'Shop/Index');
     }
 
     public function category(Request $request, Category $category, ListProductsAction $listProducts): Response
     {
-        return $this->catalog($request, $listProducts, $category);
+        return $this->catalog($request, $listProducts, 'Shop/Index', $category);
     }
 
     public function search(Request $request, ListProductsAction $listProducts): Response
     {
-        $filters = CatalogFiltersData::fromRequest($request);
-        $query = $filters->search ?? '';
+        return $this->catalog($request, $listProducts, 'Shop/Search');
+    }
 
-        return $this->catalog(
-            $request,
-            $listProducts,
-            component: 'Shop/Search',
-            pageTitle: $query !== '' ? "Search: {$query}" : 'Search',
-            pageSubtitle: $query !== ''
-                ? 'Results matching your query'
-                : 'Find shoes by name, brand, or SKU',
-            extraProps: ['query' => $query],
-            filters: $filters,
-        );
+    public function searchSuggestions(
+        Request $request,
+        SearchProductSuggestionsAction $suggestions,
+    ): JsonResponse {
+        $query = trim($request->string('q')->toString());
+
+        $products = $suggestions->handle($query);
+        $resolved = ProductResource::collection($products)->resolve($request);
+
+        return response()->json([
+            'query' => $query,
+            'suggestions' => $resolved['data'] ?? $resolved,
+        ]);
     }
 
     public function sale(Request $request, ListProductsAction $listProducts): Response
     {
-        return $this->catalog(
-            $request,
-            $listProducts,
-            component: 'Shop/Sale',
-            pageTitle: 'Sale',
-            pageSubtitle: 'Discounted styles while stock lasts',
-            filters: CatalogFiltersData::forSale($request),
-        );
+        return $this->catalog($request, $listProducts, 'Shop/Sale', collection: CatalogCollection::Sale);
     }
 
     public function newArrivals(Request $request, ListProductsAction $listProducts): Response
     {
-        return $this->catalog(
-            $request,
-            $listProducts,
-            component: 'Shop/NewArrivals',
-            pageTitle: 'New arrivals',
-            pageSubtitle: 'The latest drops, sorted newest first',
-            filters: CatalogFiltersData::forNewArrivals($request),
-        );
+        return $this->catalog($request, $listProducts, 'Shop/NewArrivals', collection: CatalogCollection::NewArrivals);
     }
 
-    /**
-     * @param  array<string, mixed>  $extraProps
-     */
     private function catalog(
         Request $request,
         ListProductsAction $listProducts,
+        string $component,
         ?Category $category = null,
-        string $component = 'Shop/Index',
-        ?string $pageTitle = null,
-        ?string $pageSubtitle = null,
-        array $extraProps = [],
-        ?CatalogFiltersData $filters = null,
+        ?CatalogCollection $collection = null,
     ): Response {
-        $filters ??= CatalogFiltersData::fromRequest($request, $category);
-        $products = $listProducts->handle($filters);
+        $filters = CatalogFiltersData::fromRequest($request, $category);
+        $products = $listProducts->handle($filters, collection: $collection);
 
         $categories = Category::query()
             ->withCount(['products' => fn ($query) => $query->where('is_active', true)])
@@ -95,9 +80,6 @@ class ShopController extends Controller
             'filters' => $filters->toArray(),
             'filterOptions' => $this->filterOptions(),
             'categories' => CategoryResource::collection($categories),
-            'pageTitle' => $pageTitle,
-            'pageSubtitle' => $pageSubtitle,
-            ...$extraProps,
         ]);
     }
 

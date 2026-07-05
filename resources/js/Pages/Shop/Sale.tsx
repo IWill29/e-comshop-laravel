@@ -1,34 +1,41 @@
 import ShopCatalog from '@/Components/Shop/ShopCatalog';
 import ShopLayout from '@/Layouts/ShopLayout';
 import { PageProps } from '@/types';
-import { ShopIndexPageProps } from '@/types/shop';
+import { ShopCollectionPageProps } from '@/types/shop';
 import { Head } from '@inertiajs/react';
 
-export default function ShopSale({
+export default function Sale({
     products,
     filters,
     filterOptions,
     categories,
-    pageTitle,
-    pageSubtitle,
-}: PageProps<ShopIndexPageProps>) {
-    const title = pageTitle ?? 'Sale';
-    const subtitle =
-        pageSubtitle ??
-        `${products.meta.total} ${products.meta.total === 1 ? 'style' : 'styles'} on sale`;
+}: PageProps<ShopCollectionPageProps>) {
+    const baseUrl = route('shop.sale');
+    const title = 'Sale';
+    const subtitle = `${products.meta.total} discounted ${products.meta.total === 1 ? 'style' : 'styles'} — limited-time markdowns`;
 
     return (
         <ShopLayout>
-            <Head title={title} />
+            <Head title="Sale" />
             <ShopCatalog
                 title={title}
                 subtitle={subtitle}
-                baseUrl={route('shop.sale')}
+                baseUrl={baseUrl}
                 category={null}
                 products={products}
                 filters={filters}
                 filterOptions={filterOptions}
                 categories={categories}
+                showCategories={false}
+                breadcrumbs={[
+                    { label: 'Home', href: route('home') },
+                    { label: 'Shop', href: route('shop.index') },
+                    { label: 'Sale' },
+                ]}
+                emptyTitle="No sale items right now"
+                emptyDescription="Check back soon — new markdowns drop regularly."
+                emptyActionHref={route('shop.index')}
+                emptyActionLabel="Browse all shoes"
             />
         </ShopLayout>
     );

@@ -9,6 +9,12 @@ import {
     Product,
 } from '@/types/shop';
 import { Link } from '@inertiajs/react';
+import { ReactNode } from 'react';
+
+export interface BreadcrumbItem {
+    label: string;
+    href?: string;
+}
 
 interface ShopCatalogProps {
     title: string;
@@ -19,7 +25,13 @@ interface ShopCatalogProps {
     filters: CatalogFilters;
     filterOptions: FilterOptions;
     categories: Category[];
-    preservedQueryParams?: Record<string, string>;
+    breadcrumbs?: BreadcrumbItem[];
+    showCategories?: boolean;
+    emptyTitle?: string;
+    emptyDescription?: string;
+    emptyActionHref?: string;
+    emptyActionLabel?: string;
+    headerExtra?: ReactNode;
 }
 
 export default function ShopCatalog({
@@ -31,43 +43,47 @@ export default function ShopCatalog({
     filters,
     filterOptions,
     categories,
-    preservedQueryParams = {},
+    breadcrumbs,
+    showCategories = true,
+    emptyTitle = 'No shoes match these filters',
+    emptyDescription = 'Try clearing a filter or browse another category.',
+    emptyActionHref = route('shop.index'),
+    emptyActionLabel = 'View all shoes',
+    headerExtra,
 }: Readonly<ShopCatalogProps>) {
     const isEmpty = products.data.length === 0;
+
+    const defaultBreadcrumbs: BreadcrumbItem[] = [
+        { label: 'Home', href: route('home') },
+        {
+            label: 'Shop',
+            href: category ? route('shop.index') : undefined,
+        },
+        ...(category ? [{ label: category.name }] : []),
+    ];
+
+    const trail = breadcrumbs ?? defaultBreadcrumbs;
 
     return (
         <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-10 lg:px-8 lg:py-12">
             <nav className="text-sm text-stone-500" aria-label="Breadcrumb">
                 <ol className="flex flex-wrap items-center gap-1.5">
-                    <li>
-                        <Link href={route('home')} className="hover:text-stone-900">
-                            Home
-                        </Link>
-                    </li>
-                    <li aria-hidden className="text-stone-300">
-                        /
-                    </li>
-                    <li>
-                        {category ? (
-                            <Link href={route('shop.index')} className="hover:text-stone-900">
-                                Shop
-                            </Link>
-                        ) : (
-                            <span className="font-medium text-stone-900">Shop</span>
-                        )}
-                    </li>
-                    {category && (
-                        <>
-                            <li aria-hidden className="text-stone-300">
-                                /
-                            </li>
-                            <li>
-                                <span className="font-medium text-stone-900">
-                                    {category.name}
+                    {trail.map((item, index) => (
+                        <li key={`${item.label}-${index}`} className="flex items-center gap-1.5">
+                            {index > 0 && (
+                                <span aria-hidden className="text-stone-300">
+                                    /
                                 </span>
-                            </li>
-                        </>
-                    )}
+                            )}
+                            {item.href ? (
+                                <Link href={item.href} className="hover:text-stone-900">
+                                    {item.label}
+                                </Link>
+                            ) : (
+                                <span className="font-medium text-stone-900">{item.label}</span>
+                            )}
+                        </li>
+                    ))}
                 </ol>
             </nav>
 
@@ -77,6 +93,7 @@ export default function ShopCatalog({
                         {title}
                     </h1>
                     <p className="mt-1 text-sm text-stone-600 sm:text-base">{subtitle}</p>
+                    {headerExtra}
                 </div>
                 <div className="lg:hidden">
                     <FilterSidebar
@@ -84,12 +101,11 @@ export default function ShopCatalog({
                         baseUrl={baseUrl}
                         filters={filters}
                         filterOptions={filterOptions}
-                        preservedQueryParams={preservedQueryParams}
                     />
                 </div>
             </div>
 
-            {!category && categories.length > 0 && (
+            {!category && showCategories && categories.length > 0 && (
                 <div className="-mx-4 mt-6 flex gap-2 overflow-x-auto px-4 pb-1 scroll-touch sm:-mx-6 sm:px-6 lg:mx-0 lg:px-0 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
                     {categories.map((item) => (
                         <Link
@@ -110,7 +126,6 @@ export default function ShopCatalog({
                         baseUrl={baseUrl}
                         filters={filters}
                         filterOptions={filterOptions}
-                        preservedQueryParams={preservedQueryParams}
                     />
                 </div>
 
@@ -118,17 +133,19 @@ export default function ShopCatalog({
                     {isEmpty ? (
                         <div className="rounded-2xl border border-dashed border-stone-200 bg-white px-6 py-16 text-center">
                             <p className="font-display text-lg font-semibold text-stone-900">
-                                No shoes match these filters
+                                {emptyTitle}
                             </p>
                             <p className="mt-2 text-sm text-stone-600">
-                                Try clearing a filter or browse another category.
+                                {emptyDescription}
                             </p>
-                            <Link
-                                href={route('shop.index')}
-                                className="mt-6 inline-flex min-h-11 items-center rounded-xl bg-indigo-600 px-5 text-sm font-semibold text-white transition hover:bg-indigo-500"
-                            >
-                                View all shoes
-                            </Link>
+                            {emptyActionHref && (
+                                <Link
+                                    href={emptyActionHref}
+                                    className="mt-6 inline-flex min-h-11 items-center rounded-xl bg-indigo-600 px-5 text-sm font-semibold text-white transition hover:bg-indigo-500"
+                                >
+                                    {emptyActionLabel}
+                                </Link>
+                            )}
                         </div>
                     ) : (
                         <>

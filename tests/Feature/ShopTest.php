@@ -76,4 +76,99 @@ class ShopTest extends TestCase
                 ->where('filterOptions.brands', ['Adidas', 'Nike'])
             );
     }
+
+    public function test_search_finds_products_by_name_brand_and_sku(): void
+    {
+        $byName = Product::factory()->create(['name' => 'Air Zoom Pegasus', 'brand' => 'Nike']);
+        $byBrand = Product::factory()->create(['name' => 'Classic Runner', 'brand' => 'Adidas']);
+        $bySku = Product::factory()->create([
+            'name' => 'Trail Max',
+            'sku' => 'PX-TRAIL-99',
+            'brand' => 'Puma',
+        ]);
+        Product::factory()->create(['name' => 'Unrelated Shoe', 'brand' => 'Reebok']);
+
+        $this->get(route('shop.search', ['q' => 'Pegasus']))
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('Shop/Search')
+                ->where('filters.query', 'Pegasus')
+                ->has('products.data', 1)
+                ->where('products.data.0.id', $byName->id)
+            );
+
+        $this->get(route('shop.search', ['q' => 'Adidas']))
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('Shop/Search')
+                ->has('products.data', 1)
+                ->where('products.data.0.id', $byBrand->id)
+            );
+
+        $this->get(route('shop.search', ['q' => 'PX-TRAIL']))
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('Shop/Search')
+                ->has('products.data', 1)
+                ->where('products.data.0.id', $bySku->id)
+            );
+    }
+
+    public function test_sale_page_shows_only_discounted_products(): void
+    {
+        $onSale = Product::factory()->onSale()->create();
+        Product::factory()->create([
+            'price' => 12000,
+            'compare_at_price' => null,
+        ]);
+
+        $this->get(route('shop.sale'))
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('Shop/Sale')
+                ->has('products.data', 1)
+                ->where('products.data.0.id', $onSale->id)
+            );
+    }
+
+    public function test_new_arrivals_page_shows_only_recent_products_sorted_by_newest(): void
+    {
+        $older = Product::factory()->create([
+            'name' => 'Older Drop',
+            'created_at' => now()->subDays(3),
+        ]);
+        $newer = Product::factory()->create([
+            'name' => 'Latest Drop',
+            'created_at' => now(),
+        ]);
+        Product::factory()->create([
+            'name' => 'Archived Drop',
+            'created_at' => now()->subDays(Product::NEW_ARRIVAL_DAYS + 1),
+        ]);
+
+        $this->get(route('shop.new-arrivals'))
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('Shop/NewArrivals')
+                ->has('products.data', 2)
+                ->where('products.data.0.id', $newer->id)
+                ->where('products.data.1.id', $older->id)
+            );
+    }
+
+    public function test_search_suggestions_returns_matching_products(): void
+    {
+        $match = Product::factory()->create(['name' => 'Air Max Pulse', 'brand' => 'Nike']);
+        Product::factory()->create(['name' => 'Unrelated Shoe', 'brand' => 'Puma']);
+
+        $this->getJson(route('shop.search.suggestions', ['q' => 'Air Max']))
+            ->assertOk()
+            ->assertJsonPath('query', 'Air Max')
+            ->assertJsonCount(1, 'suggestions')
+            ->assertJsonPath('suggestions.0.id', $match->id);
+
+        $this->getJson(route('shop.search.suggestions', ['q' => 'a']))
+            ->assertOk()
+            ->assertJsonCount(0, 'suggestions');
+    }
 }

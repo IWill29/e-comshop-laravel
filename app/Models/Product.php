@@ -35,6 +35,8 @@ class Product extends Model
     /** @use HasFactory<ProductFactory> */
     use HasFactory;
 
+    public const NEW_ARRIVAL_DAYS = 30;
+
     public function getRouteKeyName(): string
     {
         return 'slug';
@@ -47,6 +49,52 @@ class Product extends Model
     public function scopeActive(Builder $query): Builder
     {
         return $query->where('is_active', true);
+    }
+
+    /**
+     * @param  Builder<Product>  $query
+     * @return Builder<Product>
+     */
+    public function scopeOnSale(Builder $query): Builder
+    {
+        return $query
+            ->whereNotNull('compare_at_price')
+            ->whereColumn('compare_at_price', '>', 'price');
+    }
+
+    /**
+     * @param  Builder<Product>  $query
+     * @return Builder<Product>
+     */
+    public function scopeNewArrival(Builder $query, ?int $days = null): Builder
+    {
+        return $query->where(
+            'created_at',
+            '>=',
+            now()->subDays($days ?? self::NEW_ARRIVAL_DAYS),
+        );
+    }
+
+    /**
+     * @param  Builder<Product>  $query
+     * @return Builder<Product>
+     */
+    public function scopeSearch(Builder $query, string $term): Builder
+    {
+        $term = trim($term);
+
+        if ($term === '') {
+            return $query;
+        }
+
+        $like = '%'.addcslashes($term, '%_\\').'%';
+
+        return $query->where(function (Builder $builder) use ($like): void {
+            $builder
+                ->where('name', 'like', $like)
+                ->orWhere('brand', 'like', $like)
+                ->orWhere('sku', 'like', $like);
+        });
     }
 
     /**
@@ -82,42 +130,7 @@ class Product extends Model
             ->when(
                 $filters->size !== null,
                 fn (Builder $builder): Builder => $builder->whereJsonContains('sizes', $filters->size),
-            )
-            ->when(
-                $filters->search !== null,
-                fn (Builder $builder): Builder => $builder->search($filters->search),
-            )
-            ->when(
-                $filters->onSaleOnly,
-                fn (Builder $builder): Builder => $builder->onSale(),
             );
-    }
-
-    /**
-     * @param  Builder<Product>  $query
-     * @return Builder<Product>
-     */
-    public function scopeOnSale(Builder $query): Builder
-    {
-        return $query
-            ->whereNotNull('compare_at_price')
-            ->whereColumn('compare_at_price', '>', 'price');
-    }
-
-    /**
-     * @param  Builder<Product>  $query
-     * @return Builder<Product>
-     */
-    public function scopeSearch(Builder $query, string $term): Builder
-    {
-        $like = '%'.addcslashes($term, '%_\\').'%';
-
-        return $query->where(function (Builder $builder) use ($like): void {
-            $builder
-                ->where('name', 'like', $like)
-                ->orWhere('brand', 'like', $like)
-                ->orWhere('sku', 'like', $like);
-        });
     }
 
     /**

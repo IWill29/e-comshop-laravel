@@ -61,4 +61,16 @@ class ProductFactory extends Factory
             'is_active' => false,
         ]);
     }
+
+    public function onSale(): static
+    {
+        return $this->state(function (array $attributes): array {
+            $price = $attributes['price'] ?? fake()->numberBetween(4999, 14999);
+
+            return [
+                'price' => $price,
+                'compare_at_price' => $price + fake()->numberBetween(1000, 5000),
+            ];
+        });
+    }
 }
