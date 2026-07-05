@@ -10,14 +10,14 @@ E-commerce demo for **paradit-x.com** — Laravel 13, Inertia + React, Stripe, V
 
 Single source of truth for project completion. Legend: `[x]` done · `[~]` partial · `[ ]` not started.
 
-**Overall:** ~42% complete (Phase 0 foundation done; Home storefront live; cart/checkout/Stripe pending)
+**Overall:** ~58% complete (Phase 0 done; Home + shop catalog + product detail live; cart/checkout/Stripe pending)
 
 
 | Phase                                                            | Progress | Status      |
 | ---------------------------------------------------------------- | -------- | ----------- |
 | **Phase 0** — Foundation (Laravel, Inertia, auth, Vercel config) | 20 / 20  | **Done**    |
-| **Phase 1** — MVP demo (DB, shop UI, Stripe)                     | 8 / 14   | In progress |
-| **Phase 2** — Polish (Redis, CDN, queue, tests)                  | 2 / 12   | Not started |
+| **Phase 1** — MVP demo (DB, shop UI, Stripe)                     | 12 / 14  | In progress |
+| **Phase 2** — Polish (Redis, CDN, queue, tests)                  | 3 / 12   | Not started |
 | **Phase 3** — Showcase (premium UI, CI/CD, domain)               | 0 / 6    | Not started |
 
 
@@ -84,15 +84,15 @@ Single source of truth for project completion. Legend: `[x]` done · `[~]` parti
 - [x] Factories for products/orders
 - [x] `OrderStatus` / `PaymentStatus` enums
 - [ ] `CartService` (session or Redis)
-- [ ] Actions: `AddToCartAction`, `CreateCheckoutSessionAction`
-- [ ] DTOs: `CheckoutData`, `CartItemData`
+- [~] Actions: `ListProductsAction` ✓; `AddToCartAction`, `CreateCheckoutSessionAction` pending
+- [~] DTOs: `CatalogFiltersData` ✓; `CheckoutData`, `CartItemData` pending
 
 #### Storefront pages (MVP)
 
 - [x] Home (`/` → `Pages/Home.tsx`)
-- [ ] Shop catalog (`/shop`)
-- [ ] Category page (`/shop/{slug}`)
-- [ ] Product detail (`/products/{slug}`) + size selector
+- [x] Shop catalog (`/shop` → `Pages/Shop/Index.tsx` — filters, sort, pagination)
+- [x] Category page (`/shop/{slug}` → same `Pages/Shop/Index.tsx`, optional `category` prop)
+- [~] Product detail (`/products/{slug}` → `Pages/Shop/Show.tsx`) — size selector ✓; add to cart backend pending
 - [ ] Cart (`/cart`)
 - [ ] Checkout (`/checkout`)
 - [ ] Order success / cancel pages
@@ -113,14 +113,14 @@ Single source of truth for project completion. Legend: `[x]` done · `[~]` parti
 - [ ] Cloudinary / S3 + CDN for product images
 - [ ] External queue worker (Railway / Fly.io)
 - [ ] Order confirmation email (queued)
-- [ ] Feature tests: cart, checkout, webhook
+- [~] Feature tests: shop catalog (`ShopTest`, 4 tests) ✓; cart, checkout, webhook pending
 - [ ] Rate limiting on checkout + webhook
 - [ ] Sentry / Flare error tracking
 - [ ] Search, Sale, New arrivals pages
 - [ ] About, Contact, Shipping & returns
 - [ ] My orders + order detail pages
 - [ ] 404 page
-- [~] Premium shop UI (indigo accent, Syne/Outfit fonts — Home + layout done; catalog pages pending)
+- [~] Premium shop UI (indigo accent, Syne/Outfit fonts — Home, catalog, product detail done; cart/checkout pending)
 
 ---
 
@@ -137,11 +137,11 @@ Single source of truth for project completion. Legend: `[x]` done · `[~]` parti
 
 ### Backend architecture (Laravel Way)
 
-- [~] Thin controllers (`HomeController` + auth; cart/checkout controllers missing)
+- [~] Thin controllers (`HomeController`, `ShopController`, `ProductController` + auth; cart/checkout pending)
 - [~] Form Requests (auth/profile only)
 - [x] Enums for order/payment status
-- [ ] DTOs for checkout/Stripe
-- [ ] Actions for business operations
+- [~] DTOs for checkout/Stripe (`CatalogFiltersData` done)
+- [~] Actions for business operations (`ListProductsAction` done)
 - [ ] Events + Listeners (order paid → email, stock)
 - [ ] Policies (`OrderPolicy`, `ProductPolicy`)
 - [~] `declare(strict_types=1)` on all PHP files (e-commerce domain done)
@@ -165,7 +165,7 @@ Single source of truth for project completion. Legend: `[x]` done · `[~]` parti
 
 - [x] Auth + profile feature tests (PHPUnit, 26 passing)
 - [x] Health endpoint `/up`
-- [ ] E-commerce feature tests
+- [~] E-commerce feature tests (`ShopTest` — catalog/sort/filters; cart/checkout pending)
 - [ ] Unit tests (CartService, pricing)
 - [ ] CI/CD pipeline
 - [ ] Error tracking in production
@@ -178,14 +178,15 @@ Single source of truth for project completion. Legend: `[x]` done · `[~]` parti
 
 | Ready                                 | Missing                                |
 | ------------------------------------- | -------------------------------------- |
-| Laravel 13 + Breeze + Inertia + React | Shop / Cart / Checkout pages           |
-| Auth UI + tests (26 passing)          | Stripe integration                     |
-| Vercel config + `public/build`        | PostgreSQL in Vercel Dashboard (Neon)  |
-| E-commerce domain (models, migrations, JSON seeders) | Redis, CDN, queue worker       |
-| Home page (`HomeController`, `ProductResource`, `CategoryResource`) | Catalog, product detail, cart |
-| `ShopLayout` + shop components (`ProductCard`, `CategoryTile`, brand ticker) | Shared `cartCount` prop |
-| Docker local dev (PG + Redis, `node_modules` volume) |                                        |
-| Trust proxies, `/up` health check     | CI/CD, monitoring, custom domain       |
+| Laravel 13 + Breeze + Inertia + React | Cart / Checkout pages + Stripe         |
+| Auth UI + tests (26 passing)          | PostgreSQL in Vercel Dashboard (Neon)  |
+| Vercel config + `public/build`        | Redis, CDN, queue worker               |
+| E-commerce domain (models, migrations, JSON seeders) | Shared `cartCount` prop        |
+| Home + Shop catalog + Product detail (`ShopController`, `ListProductsAction`, `CatalogFiltersData`) | Add to cart backend |
+| `ShopLayout` + shop components (`ProductCard`, `FilterSidebar`, `SizeSelector`, `ShopCatalog`) | Checkout flow |
+| Shop feature tests (4 passing)        | CI/CD, monitoring, custom domain       |
+| Docker local dev (PG + Redis)         |                                        |
+| Trust proxies, `/up` health check     |                                        |
 
 
 ---
@@ -229,11 +230,11 @@ app/
 
 | #    | Principle              | Requirement                                      | Status                 |
 | ---- | ---------------------- | ------------------------------------------------ | ---------------------- |
-| 2.1  | **Thin controllers**   | Logic → Actions/Services                         | Partial (auth)         |
+| 2.1  | **Thin controllers**   | Logic → Actions/Services                         | Partial (shop + auth)  |
 | 2.2  | **Form Requests**      | All POST/PUT with validation                     | Partial (auth/profile) |
 | 2.3  | **Enums**              | Statuses, not strings (`OrderStatus::Paid`)      | **Done** (Order/Payment) |
-| 2.4  | **DTOs**               | Stripe, checkout, API responses                  | Not started            |
-| 2.5  | **Actions**            | `CreateCheckoutSessionAction`, `AddToCartAction` | Not started            |
+| 2.4  | **DTOs**               | Stripe, checkout, API responses                  | Partial (`CatalogFiltersData`) |
+| 2.5  | **Actions**            | `CreateCheckoutSessionAction`, `AddToCartAction` | Partial (`ListProductsAction`) |
 | 2.6  | **Events + Listeners** | Order paid → email, stock update                 | Not started            |
 | 2.7  | **Policies**           | `OrderPolicy`, `ProductPolicy`                   | Not started            |
 | 2.8  | **Strict types**       | `declare(strict_types=1)` in PHP files           | Partial (e-commerce)   |
@@ -408,12 +409,12 @@ Verify with `php artisan route:list`.
 
 | #     | Component          | Structure                                                | Status                |
 | ----- | ------------------ | -------------------------------------------------------- | --------------------- |
-| 3.5.1 | **Layout**         | `ShopLayout.tsx` — header, cart, footer                  | Not started           |
-| 3.5.2 | **Pages**          | `Pages/Shop/`, `Pages/Cart/`, `Pages/Checkout/`          | Not started           |
-| 3.5.3 | **Components**     | `ProductCard`, `SizeSelector`, `FilterSidebar`           | Not started           |
-| 3.5.4 | **Hooks**          | `useCart`, `useFormatPrice`                              | Not started           |
+| 3.5.1 | **Layout**         | `ShopLayout.tsx` — header, cart, footer                  | **Done**              |
+| 3.5.2 | **Pages**          | `Pages/Shop/`, `Pages/Cart/`, `Pages/Checkout/`          | Partial (Shop ✓)      |
+| 3.5.3 | **Components**     | `ProductCard`, `SizeSelector`, `FilterSidebar`           | **Done** (catalog)    |
+| 3.5.4 | **Hooks**          | `useCart`, `useFormatPrice`, `useCatalogFilters`         | Partial (no `useCart`) |
 | 3.5.5 | **Shared props**   | `cartCount`, `flash`, `auth` via `HandleInertiaRequests` | Partial (`auth` only) |
-| 3.5.6 | **Type safety**    | TypeScript — extend `resources/js/types/index.d.ts`      | Done (base)           |
+| 3.5.6 | **Type safety**    | TypeScript — `resources/js/types/shop.d.ts`              | **Done** (shop types) |
 | 3.5.7 | **Asset strategy** | `npm run build` → commit `public/build` (Vercel)         | **Done**              |
 
 
@@ -489,8 +490,8 @@ flowchart TD
 
 | #   | Feature      | Professional standard                       | Status      |
 | --- | ------------ | ------------------------------------------- | ----------- |
-| 5.1 | Catalog      | Filter, search, pagination                  | Not started |
-| 5.2 | Product page | Stock check, quantity limits                | Not started |
+| 5.1 | Catalog      | Filter, search, pagination                  | Partial (filters, sort, pagination; no search/color) |
+| 5.2 | Product page | Stock check, quantity limits                | Partial (size selector, stock display; add to cart pending) |
 | 5.3 | Cart         | Session/Redis, stock validation at checkout | Not started |
 | 5.4 | Checkout     | Guest checkout + optional auth              | Not started |
 | 5.5 | Orders       | Status enum, idempotency                    | Partial (enum + models) |
@@ -541,13 +542,13 @@ flowchart TD
 
 | #   | Optimization              | How                                   | Status                       |
 | --- | ------------------------- | ------------------------------------- | ---------------------------- |
-| 8.1 | **Eager loading**         | `Product::with('category')`           | Not started                  |
+| 8.1 | **Eager loading**         | `Product::with('category')`           | **Done** (`ListProductsAction`, `HomeController`) |
 | 8.2 | **Cache**                 | Redis — categories, featured products | Not started                  |
 | 8.3 | **Route/config cache**    | `artisan optimize` on deploy          | **Done** (`composer vercel`) |
 | 8.4 | **Asset bundling**        | Vite production build                 | **Done**                     |
 | 8.5 | **DB connection pooling** | Neon serverless driver                | Not started                  |
 | 8.6 | **Images**                | CDN + WebP, not local on Vercel       | Not started                  |
-| 8.7 | **Pagination**            | Not `Product::all()`                  | Not started                  |
+| 8.7 | **Pagination**            | Not `Product::all()`                  | **Done** (12 per page)       |
 
 
 ---
@@ -572,7 +573,7 @@ flowchart TD
 
 | #    | Test                | Coverage                           | Status                       |
 | ---- | ------------------- | ---------------------------------- | ---------------------------- |
-| 10.1 | **Feature tests**   | Cart, checkout, webhook            | Not started                  |
+| 10.1 | **Feature tests**   | Cart, checkout, webhook            | Partial (shop catalog ✓)     |
 | 10.2 | **Unit tests**      | Pricing, CartService               | Not started                  |
 | 10.3 | **Stripe mock**     | `Stripe::fake()` or HTTP mock      | Not started                  |
 | 10.4 | **Pest.php**        | Modern syntax                      | Not started (PHPUnit)        |
@@ -624,7 +625,7 @@ Railway/Fly.io  → Queue worker (webhook, emails)
 
 1. ~~Breeze + Inertia + React~~ ✓
 2. ~~PostgreSQL (Neon) + migrations + seeders~~ ✓ (JSON seed data, consolidated migration)
-3. Shop, Cart, Checkout UI
+3. ~~Shop catalog + product detail UI~~ ✓ (cart/checkout pages pending)
 4. Stripe Checkout (test mode)
 5. Webhook → order paid
 
@@ -675,10 +676,10 @@ flowchart LR
 
 | #   | Page                   | Route                      | Inertia component            | Purpose                                        | Status                                |
 | --- | ---------------------- | -------------------------- | ---------------------------- | ---------------------------------------------- | ------------------------------------- |
-| 1   | **Home**               | `/`                        | `Pages/Home.tsx`             | Hero, featured shoes, categories, new arrivals | Not started (Welcome.tsx placeholder) |
-| 2   | **Shop / Catalog**     | `/shop`                    | `Pages/Shop/Index.tsx`       | All products, filters, sort, pagination        | Not started                           |
-| 3   | **Category**           | `/shop/{category:slug}`    | `Pages/Shop/Category.tsx`    | Men, Women, Kids, Sneakers, Boots, Sandals     | Not started                           |
-| 4   | **Product detail**     | `/products/{product:slug}` | `Pages/Shop/Show.tsx`        | Images, price, **size selector**, add to cart  | Not started                           |
+| 1   | **Home**               | `/`                        | `Pages/Home.tsx`             | Hero, featured shoes, categories, new arrivals | **Done**                              |
+| 2   | **Shop / Catalog**     | `/shop`                    | `Pages/Shop/Index.tsx`       | All products, filters, sort, pagination        | **Done**                              |
+| 3   | **Category**           | `/shop/{category:slug}`    | `Pages/Shop/Index.tsx`       | Shared Index page with `category` prop (variant A) | **Done**                          |
+| 4   | **Product detail**     | `/products/{product:slug}` | `Pages/Shop/Show.tsx`        | Images, price, **size selector**, add to cart  | Partial (UI ✓; cart POST pending)     |
 | 5   | **Cart**               | `/cart`                    | `Pages/Cart/Index.tsx`       | Line items, size/qty, subtotal, checkout CTA   | Not started                           |
 | 6   | **Checkout**           | `/checkout`                | `Pages/Checkout/Index.tsx`   | Email, shipping address, order summary         | Not started                           |
 | 7   | **Order success**      | `/checkout/success`        | `Pages/Checkout/Success.tsx` | Thank you, order number, summary               | Not started                           |
@@ -795,9 +796,9 @@ Footer links to 22–24 on every page.
 #### Storefront (MVP)
 
 - [x] Home — hero, 3–4 featured products, category tiles, new arrivals, brand ticker
-- [ ] Shop — grid, filters, pagination
-- [ ] Category — filtered catalog per slug
-- [ ] Product detail — size selector, gallery, add to cart
+- [x] Shop — grid, filters, pagination
+- [x] Category — filtered catalog per slug (shared `Shop/Index`)
+- [~] Product detail — size selector ✓; gallery (single image); add to cart backend pending
 - [ ] Cart — update qty, remove, proceed to checkout
 - [ ] Checkout — guest form + Stripe redirect
 - [ ] Success / Cancel — post-payment states
@@ -834,8 +835,8 @@ Footer links to 22–24 on every page.
 - [x] `ShopLayout` with header + footer
 - [x] Mobile-responsive shop navigation
 - [ ] Cart count in header (shared Inertia prop)
-- [~] English copy throughout (shop) — Home done; catalog pages pending
-- [~] Premium UI (rounded cards, indigo accent, Syne/Outfit fonts) — Home + components done
+- [x] English copy throughout (shop)
+- [x] Premium UI (rounded cards, indigo accent, Syne/Outfit fonts) — Home + catalog + product detail
 
 ---
 
@@ -852,8 +853,15 @@ resources/js/
 │   ├── CategoryTile.tsx     # ✓
 │   ├── BrandLogo.tsx        # ✓
 │   ├── BrandTicker.tsx      # ✓
-│   ├── SizeSelector.tsx     # to add
+│   ├── Shop/
+│   │   ├── ShopCatalog.tsx  # ✓
+│   │   ├── FilterSidebar.tsx # ✓
+│   │   ├── CatalogPagination.tsx # ✓
+│   │   └── SizeSelector.tsx # ✓
 │   └── …
+├── Hooks/
+│   ├── useFormatPrice.ts    # ✓
+│   └── useCatalogFilters.ts # ✓
 ├── Layouts/
 │   ├── AuthenticatedLayout.tsx   # Breeze ✓
 │   ├── GuestLayout.tsx           # Breeze ✓
@@ -865,12 +873,11 @@ resources/js/
 │   ├── Profile/                  # Breeze ✓
 │   ├── Home.tsx                  # ✓
 │   ├── Shop/
-│   │   ├── Index.tsx
-│   │   ├── Category.tsx
-│   │   ├── Show.tsx
-│   │   ├── Search.tsx
-│   │   ├── Sale.tsx
-│   │   └── NewArrivals.tsx
+│   │   ├── Index.tsx             # ✓ (also serves `/shop/{slug}`)
+│   │   ├── Show.tsx              # ✓
+│   │   ├── Search.tsx            # Phase 2
+│   │   ├── Sale.tsx              # Phase 2
+│   │   └── NewArrivals.tsx       # Phase 2
 │   ├── Cart/
 │   │   └── Index.tsx
 │   ├── Checkout/
@@ -901,9 +908,9 @@ Quick verification before production. See **Architecture Progress Checklist** ab
 
 ### Backend
 
-- [~] Controllers are thin; logic lives in Actions/Services (`HomeController` + auth)
-- [~] Enums + DTOs + Form Requests (enums done; DTOs/requests partial)
-- [~] `declare(strict_types=1)` on all PHP files (e-commerce domain done)
+- [~] Controllers are thin; logic lives in Actions/Services (`HomeController`, `ShopController`, `ProductController` + auth)
+- [~] Enums + DTOs + Form Requests (enums done; `CatalogFiltersData`; cart/checkout pending)
+- [~] `declare(strict_types=1)` on all PHP files (e-commerce + shop domain done)
 - [ ] Events/Listeners for order lifecycle
 - [ ] Policies for authorization (shop)
 
@@ -927,16 +934,16 @@ Quick verification before production. See **Architecture Progress Checklist** ab
 ### Frontend
 
 - [x] Breeze + Inertia + React (auth, layouts, TypeScript)
-- [ ] Shop layout + storefront pages
-- [ ] Reusable shop UI components
+- [~] Shop layout + storefront pages (catalog + product ✓; cart/checkout pending)
+- [x] Reusable shop UI components (catalog)
 - [x] Production assets built and committed (`public/build`)
-- [ ] Mobile-first, premium SaaS UI (shop)
-- [ ] All MVP shoe store pages (see §13 checklist)
+- [x] Mobile-first, premium SaaS UI (shop catalog + product detail)
+- [~] All MVP shoe store pages (3/7 done — cart/checkout/success/cancel pending)
 
 ### Quality & ops
 
 - [x] Auth feature tests (26 passing)
-- [ ] Feature tests for cart, checkout, webhook
+- [~] Feature tests for cart, checkout, webhook (`ShopTest` catalog — 4 tests)
 - [ ] Rate limiting on public endpoints
 - [ ] Error tracking (Sentry/Flare)
 - [ ] CI/CD pipeline (GitHub Actions → Vercel)
@@ -959,4 +966,4 @@ Before first production deploy:
 
 ---
 
-*Last updated: July 2026 — Phase 1 database layer complete (consolidated migration, JSON seeders); shop UI next*
+*Last updated: July 2026 — Phase 1 shop catalog + product detail complete (`Shop/Index`, `Shop/Show`, `ListProductsAction`, `ShopTest`); cart/checkout/Stripe next*
