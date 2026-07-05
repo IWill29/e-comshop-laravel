@@ -66,6 +66,7 @@ readonly class CatalogFiltersData
             || $this->minPrice !== null
             || $this->maxPrice !== null
             || $this->size !== null
+            || $this->searchQuery !== null
             || $this->sort !== 'newest';
     }
 

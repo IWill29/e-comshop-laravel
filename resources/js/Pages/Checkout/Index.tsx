@@ -3,7 +3,7 @@ import { formatPrice } from '@/Hooks/useFormatPrice';
 import ShopLayout from '@/Layouts/ShopLayout';
 import { handleImageError } from '@/lib/image';
 import { PageProps } from '@/types';
-import { CheckoutIndexPageProps } from '@/types/shop';
+import { CheckoutFormDefaults, CheckoutIndexPageProps } from '@/types/shop';
 import { Head, Link, useForm } from '@inertiajs/react';
 import { FormEventHandler } from 'react';
 
@@ -21,12 +21,15 @@ const countries = [
     { code: 'LV', label: 'Latvia' },
 ];
 
+type CheckoutFormData = CheckoutFormDefaults & { cart?: string };
+
 export default function CheckoutIndex({
     items,
     summary,
     defaults,
 }: PageProps<CheckoutIndexPageProps>) {
-    const { data, setData, post, processing, errors } = useForm({
+    const { data, setData, post, processing, errors } = useForm<CheckoutFormData>({
+        cart: '',
         email: defaults.email,
         name: defaults.name,
         line1: defaults.line1,
