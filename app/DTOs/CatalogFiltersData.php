@@ -21,6 +21,7 @@ readonly class CatalogFiltersData
         public ?int $maxPrice,
         public ?int $size,
         public string $sort,
+        public ?string $searchQuery = null,
     ) {}
 
     public static function fromRequest(Request $request, ?Category $category = null): self
@@ -28,6 +29,7 @@ readonly class CatalogFiltersData
         $sort = $request->string('sort')->toString();
         $gender = $request->string('gender')->toString();
         $brand = $request->string('brand')->toString();
+        $searchQuery = trim($request->string('q')->toString());
 
         return new self(
             categorySlug: $category?->slug,
@@ -37,6 +39,7 @@ readonly class CatalogFiltersData
             maxPrice: self::nullableInt($request->input('max_price')),
             size: self::nullableInt($request->input('size')),
             sort: in_array($sort, self::SORT_OPTIONS, true) ? $sort : 'newest',
+            searchQuery: $searchQuery !== '' ? $searchQuery : null,
         );
     }
 
@@ -52,6 +55,7 @@ readonly class CatalogFiltersData
             'maxPrice' => $this->maxPrice,
             'size' => $this->size,
             'sort' => $this->sort,
+            'query' => $this->searchQuery,
         ];
     }
 

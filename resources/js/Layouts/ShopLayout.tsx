@@ -1,3 +1,4 @@
+import ProductSearch from '@/Components/Shop/ProductSearch';
 import { Link, usePage } from '@inertiajs/react';
 import { PropsWithChildren, useEffect, useState } from 'react';
 import { PageProps } from '@/types';
@@ -6,7 +7,7 @@ const navLinks = [
     { label: 'Shop', href: '/shop' },
     { label: 'Men', href: '/shop/mens' },
     { label: 'Women', href: '/shop/womens' },
-    { label: 'Sneakers', href: '/shop/sneakers' },
+    { label: 'Sale', href: '/sale' },
     { label: 'New arrivals', href: '/new-arrivals' },
 ];
 
@@ -50,6 +51,13 @@ export default function ShopLayout({ children }: PropsWithChildren) {
                     </div>
 
                     <div className="flex shrink-0 items-center gap-1 sm:gap-2">
+                        <ProductSearch
+                            id="header-search"
+                            placeholder="Search shoes…"
+                            className="hidden w-40 md:block lg:w-52"
+                            inputClassName="h-10 w-full rounded-xl border border-stone-200 bg-white px-3 text-sm text-stone-900 outline-none transition placeholder:text-stone-400 focus:border-indigo-300 focus:ring-2 focus:ring-indigo-500/20"
+                        />
+
                         <Link
                             href="/cart"
                             className="relative flex h-11 w-11 items-center justify-center rounded-xl text-stone-600 transition hover:bg-stone-100 hover:text-stone-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
@@ -120,6 +128,13 @@ export default function ShopLayout({ children }: PropsWithChildren) {
                         className="safe-bottom max-h-[calc(100dvh-3.5rem)] overflow-y-auto border-t border-stone-200 bg-stone-50 px-4 py-4 scroll-touch sm:max-h-[calc(100dvh-4rem)] lg:hidden"
                         aria-label="Mobile"
                     >
+                        <div className="mb-4 px-1">
+                            <ProductSearch
+                                id="mobile-search"
+                                placeholder="Search name, brand, SKU…"
+                                className="w-full"
+                            />
+                        </div>
                         <ul className="space-y-1">
                             {navLinks.map((link) => (
                                 <li key={link.href}>
@@ -183,6 +198,8 @@ export default function ShopLayout({ children }: PropsWithChildren) {
                                 <li><Link href="/shop/mens" className="inline-flex min-h-8 items-center text-stone-600 hover:text-stone-900">Men</Link></li>
                                 <li><Link href="/shop/womens" className="inline-flex min-h-8 items-center text-stone-600 hover:text-stone-900">Women</Link></li>
                                 <li><Link href="/shop/sneakers" className="inline-flex min-h-8 items-center text-stone-600 hover:text-stone-900">Sneakers</Link></li>
+                                <li><Link href="/sale" className="inline-flex min-h-8 items-center text-stone-600 hover:text-stone-900">Sale</Link></li>
+                                <li><Link href="/new-arrivals" className="inline-flex min-h-8 items-center text-stone-600 hover:text-stone-900">New arrivals</Link></li>
                             </ul>
                         </div>
 
