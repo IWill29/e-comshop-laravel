@@ -1,10 +1,16 @@
 <?php
 
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ShopController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', HomeController::class)->name('home');
+
+Route::get('/shop', [ShopController::class, 'index'])->name('shop.index');
+Route::get('/shop/{category:slug}', [ShopController::class, 'category'])->name('shop.category');
+Route::get('/products/{product:slug}', [ProductController::class, 'show'])->name('products.show');
 
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
