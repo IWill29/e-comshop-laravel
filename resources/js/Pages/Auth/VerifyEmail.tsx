@@ -3,7 +3,7 @@ import GuestLayout from '@/Layouts/GuestLayout';
 import { Head, Link, useForm } from '@inertiajs/react';
 import { FormEventHandler } from 'react';
 
-export default function VerifyEmail({ status }: { status?: string }) {
+export default function VerifyEmail({ status }: Readonly<{ status?: string }>) {
     const { post, processing } = useForm({});
 
     const submit: FormEventHandler = (e) => {

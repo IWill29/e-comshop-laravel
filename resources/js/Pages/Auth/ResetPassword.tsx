@@ -9,10 +9,10 @@ import { FormEventHandler } from 'react';
 export default function ResetPassword({
     token,
     email,
-}: {
+}: Readonly<{
     token: string;
     email: string;
-}) {
+}>) {
     const { data, setData, post, processing, errors, reset } = useForm({
         token: token,
         email: email,

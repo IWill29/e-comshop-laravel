@@ -5,7 +5,9 @@ import {
     Dispatch,
     PropsWithChildren,
     SetStateAction,
+    useCallback,
     useContext,
+    useMemo,
     useState,
 } from 'react';
 
@@ -22,12 +24,17 @@ const DropDownContext = createContext<{
 const Dropdown = ({ children }: PropsWithChildren) => {
     const [open, setOpen] = useState(false);
 
-    const toggleOpen = () => {
+    const toggleOpen = useCallback(() => {
         setOpen((previousState) => !previousState);
-    };
+    }, []);
+
+    const contextValue = useMemo(
+        () => ({ open, setOpen, toggleOpen }),
+        [open, toggleOpen],
+    );
 
     return (
-        <DropDownContext.Provider value={{ open, setOpen, toggleOpen }}>
+        <DropDownContext.Provider value={contextValue}>
             <div className="relative">{children}</div>
         </DropDownContext.Provider>
     );
@@ -38,13 +45,28 @@ const Trigger = ({ children }: PropsWithChildren) => {
 
     return (
         <>
-            <div onClick={toggleOpen}>{children}</div>
+            <div
+                role="button"
+                tabIndex={0}
+                onClick={toggleOpen}
+                onKeyDown={(event) => {
+                    if (event.key === 'Enter' || event.key === ' ') {
+                        event.preventDefault();
+                        toggleOpen();
+                    }
+                }}
+            >
+                {children}
+            </div>
 
             {open && (
-                <div
+                <button
+                    type="button"
+                    tabIndex={-1}
+                    aria-label="Close dropdown"
                     className="fixed inset-0 z-40"
                     onClick={() => setOpen(false)}
-                ></div>
+                />
             )}
         </>
     );
@@ -89,13 +111,19 @@ const Content = ({
             >
                 <div
                     className={`absolute z-50 mt-2 rounded-md shadow-lg ${alignmentClasses} ${widthClasses}`}
-                    onClick={() => setOpen(false)}
                 >
                     <div
+                        role="menu"
                         className={
                             `rounded-md ring-1 ring-black ring-opacity-5 ` +
                             contentClasses
                         }
+                        onClick={() => setOpen(false)}
+                        onKeyDown={(event) => {
+                            if (event.key === 'Escape') {
+                                setOpen(false);
+                            }
+                        }}
                     >
                         {children}
                     </div>

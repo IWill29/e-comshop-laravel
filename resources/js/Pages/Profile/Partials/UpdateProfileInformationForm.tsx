@@ -10,11 +10,11 @@ export default function UpdateProfileInformation({
     mustVerifyEmail,
     status,
     className = '',
-}: {
+}: Readonly<{
     mustVerifyEmail: boolean;
     status?: string;
     className?: string;
-}) {
+}>) {
     const user = usePage().props.auth.user;
 
     const { data, setData, patch, errors, processing, recentlySuccessful } =
