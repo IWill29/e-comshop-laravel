@@ -1,1 +1,0 @@
-import{j as s}from"./app-BWrnrZPf.js";import{A as a}from"./AuthLayout-GZyJu_4r.js";function e({children:t,title:o="Your account",subtitle:r,alternate:u}){return s.jsx(a,{title:o,subtitle:r,alternate:u,children:t})}export{e as G};

@@ -1,7 +1,5 @@
-import InputError from '@/Components/InputError';
-import InputLabel from '@/Components/InputLabel';
-import PrimaryButton from '@/Components/PrimaryButton';
-import TextInput from '@/Components/TextInput';
+import AuthButton from '@/Components/Auth/AuthButton';
+import AuthField from '@/Components/Auth/AuthField';
 import { Transition } from '@headlessui/react';
 import { Link, useForm, usePage } from '@inertiajs/react';
 import { FormEventHandler } from 'react';
@@ -9,11 +7,9 @@ import { FormEventHandler } from 'react';
 export default function UpdateProfileInformation({
     mustVerifyEmail,
     status,
-    className = '',
 }: Readonly<{
     mustVerifyEmail: boolean;
     status?: string;
-    className?: string;
 }>) {
     const user = usePage().props.auth.user;
 
@@ -30,84 +26,80 @@ export default function UpdateProfileInformation({
     };
 
     return (
-        <section className={className}>
+        <section>
             <header>
-                <h2 className="text-lg font-medium text-gray-900">
-                    Profile Information
+                <h2 className="font-display text-lg font-bold text-stone-900">
+                    Profile information
                 </h2>
-
-                <p className="mt-1 text-sm text-gray-600">
-                    Update your account's profile information and email address.
+                <p className="mt-1 text-sm text-stone-600">
+                    Update your name and email address.
                 </p>
             </header>
 
-            <form onSubmit={submit} className="mt-6 space-y-6">
-                <div>
-                    <InputLabel htmlFor="name" value="Name" />
+            <form onSubmit={submit} className="mt-6 space-y-5">
+                <AuthField
+                    id="name"
+                    label="Name"
+                    name="name"
+                    value={data.name}
+                    autoComplete="name"
+                    isFocused
+                    onChange={(e) => setData('name', e.target.value)}
+                    error={errors.name}
+                />
 
-                    <TextInput
-                        id="name"
-                        className="mt-1 block w-full"
-                        value={data.name}
-                        onChange={(e) => setData('name', e.target.value)}
-                        required
-                        isFocused
-                        autoComplete="name"
-                    />
-
-                    <InputError className="mt-2" message={errors.name} />
-                </div>
-
-                <div>
-                    <InputLabel htmlFor="email" value="Email" />
-
-                    <TextInput
-                        id="email"
-                        type="email"
-                        className="mt-1 block w-full"
-                        value={data.email}
-                        onChange={(e) => setData('email', e.target.value)}
-                        required
-                        autoComplete="username"
-                    />
-
-                    <InputError className="mt-2" message={errors.email} />
-                </div>
+                <AuthField
+                    id="email"
+                    label="Email"
+                    type="email"
+                    name="email"
+                    value={data.email}
+                    autoComplete="username"
+                    onChange={(e) => setData('email', e.target.value)}
+                    error={errors.email}
+                />
 
                 {mustVerifyEmail && user.email_verified_at === null && (
-                    <div>
-                        <p className="mt-2 text-sm text-gray-800">
-                            Your email address is unverified.
+                    <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3">
+                        <p className="text-sm text-amber-900">
+                            Your email address is unverified.{' '}
                             <Link
                                 href={route('verification.send')}
                                 method="post"
                                 as="button"
-                                className="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                                className="font-medium text-indigo-600 transition hover:text-indigo-500 focus:outline-none focus-visible:underline"
                             >
-                                Click here to re-send the verification email.
+                                Resend verification email
                             </Link>
                         </p>
 
                         {status === 'verification-link-sent' && (
-                            <div className="mt-2 text-sm font-medium text-green-600">
+                            <p className="mt-2 text-sm font-medium text-emerald-700">
                                 A new verification link has been sent to your
                                 email address.
-                            </div>
+                            </p>
                         )}
                     </div>
                 )}
 
-                <div className="flex items-center gap-4">
-                    <PrimaryButton disabled={processing}>Save</PrimaryButton>
+                <div className="flex flex-wrap items-center gap-4 pt-1">
+                    <AuthButton
+                        type="submit"
+                        disabled={processing}
+                        className="w-auto min-w-[8rem]"
+                    >
+                        {processing ? 'Saving…' : 'Save changes'}
+                    </AuthButton>
 
                     <Transition
                         show={recentlySuccessful}
-                        enter="transition ease-in-out"
+                        enter="transition ease-in-out duration-150"
                         enterFrom="opacity-0"
-                        leave="transition ease-in-out"
+                        enterTo="opacity-100"
+                        leave="transition ease-in-out duration-150"
                         leaveTo="opacity-0"
                     >
-                        <p className="text-sm text-gray-600">
+                        <p className="text-sm font-medium text-emerald-600">
                             Saved.
                         </p>
                     </Transition>
