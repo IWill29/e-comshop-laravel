@@ -10,14 +10,14 @@ E-commerce demo for **paradit-x.com** — Laravel 13, Inertia + React, Stripe, V
 
 Single source of truth for project completion. Legend: `[x]` done · `[~]` partial · `[ ]` not started.
 
-**Overall:** ~78% complete (Phase 0 done; Phase 1 MVP done — shop, cart, Stripe Checkout + webhooks live on Vercel; Phase 2 polish pending)
+**Overall:** ~83% complete (Phase 0 done; Phase 1 MVP done; Phase 2 in progress — account orders + premium auth UI done)
 
 
 | Phase                                                            | Progress | Status      |
 | ---------------------------------------------------------------- | -------- | ----------- |
 | **Phase 0** — Foundation (Laravel, Inertia, auth, Vercel config) | 22 / 22  | **Done**    |
 | **Phase 1** — MVP demo (DB, shop UI, Stripe)                     | 14 / 14  | **Done**    |
-| **Phase 2** — Polish (Redis, CDN, queue, tests)                  | 8 / 12   | In progress |
+| **Phase 2** — Polish (Redis, CDN, queue, tests)                  | 9 / 12   | In progress |
 | **Phase 3** — Showcase (premium UI, CI/CD, domain)               | 0 / 6    | Not started |
 
 
@@ -58,7 +58,9 @@ Single source of truth for project completion. Legend: `[x]` done · `[~]` parti
 - [x] Email verification flow (optional, not enforced on User model)
 - [x] Profile edit / password update / delete account
 - [x] `GuestLayout` + `AuthenticatedLayout`
-- [x] Auth feature tests (26 passing)
+- [x] Premium auth UI (`AuthLayout`, `AuthField`, `AuthButton` — Login + Register match shop design)
+- [x] Post-auth redirect to storefront (`CustomerRedirect` → home; `/dashboard` reserved for future admin)
+- [x] Auth feature tests (26 passing; redirects updated for customer flow)
 
 #### Deployment prep
 
@@ -117,14 +119,14 @@ Single source of truth for project completion. Legend: `[x]` done · `[~]` parti
 - [ ] Cloudinary / S3 + CDN for product images
 - [ ] External queue worker (Railway / Fly.io)
 - [ ] Order confirmation email (queued)
-- [~] Feature tests: shop (`ShopTest` ×8), cart (`CartTest` ×6, `CartServiceTest` ×2), checkout (`CheckoutTest` ×4, `CreateCheckoutSessionActionTest` ×2), webhook (`StripeWebhookTest` ×4) ✓
+- [~] Feature tests: shop (`ShopTest` ×8), cart (`CartTest` ×6, `CartServiceTest` ×2), checkout (`CheckoutTest` ×4, `CreateCheckoutSessionActionTest` ×2), webhook (`StripeWebhookTest` ×4), account (`AccountOrderTest` ×3) ✓
 - [ ] Rate limiting on checkout + webhook
 - [ ] Sentry / Flare error tracking
 - [x] Search, Sale, New arrivals pages (`/search`, `/sale`, `/new-arrivals` + header search autocomplete)
 - [ ] About, Contact, Shipping & returns
-- [ ] My orders + order detail pages
+- [x] My orders + order detail pages (`/account/orders`, `OrderPolicy`, `UserMenu` in header)
 - [ ] 404 page
-- [x] Premium shop UI (indigo accent, Syne/Outfit fonts — Home, catalog, product detail, cart, checkout)
+- [x] Premium shop UI (indigo accent, Syne/Outfit fonts — Home, catalog, product detail, cart, checkout, auth)
 
 ---
 
@@ -141,13 +143,13 @@ Single source of truth for project completion. Legend: `[x]` done · `[~]` parti
 
 ### Backend architecture (Laravel Way)
 
-- [~] Thin controllers (`HomeController`, `ShopController`, `ProductController`, `CheckoutController`, `CartController`, `StripeWebhookController` + auth)
+- [~] Thin controllers (`HomeController`, `ShopController`, `ProductController`, `CheckoutController`, `CartController`, `Account\OrderController`, `StripeWebhookController` + auth)
 - [~] Form Requests (auth/profile + `StoreCheckoutRequest` ✓)
 - [x] Enums for order/payment status
 - [x] DTOs for checkout/cart/Stripe (`CheckoutData`, `CartItemData`, `CatalogFiltersData` + `shop.d.ts` ✓)
 - [x] Actions for business operations (`ListProductsAction`, `CreateCheckoutSessionAction`, `HandleStripeWebhookAction`, `AddToCartAction` ✓)
 - [ ] Events + Listeners (order paid → email, stock)
-- [ ] Policies (`OrderPolicy`, `ProductPolicy`)
+- [~] Policies (`OrderPolicy` ✓, `ProductPolicy` pending)
 - [~] `declare(strict_types=1)` on all PHP files (e-commerce domain done)
 
 ---
@@ -169,7 +171,7 @@ Single source of truth for project completion. Legend: `[x]` done · `[~]` parti
 
 - [x] Auth + profile feature tests (PHPUnit, 26 passing)
 - [x] Health endpoint `/up`
-- [x] E-commerce feature tests (`ShopTest` ×8, `CartTest` ×6, `CheckoutTest` ×4, `StripeWebhookTest` ×4, `CreateCheckoutSessionActionTest` ×2, `CartServiceTest` ×2 — **52 tests total**)
+- [x] E-commerce feature tests (`ShopTest` ×8, `CartTest` ×6, `CheckoutTest` ×4, `StripeWebhookTest` ×4, `CreateCheckoutSessionActionTest` ×2, `CartServiceTest` ×2, `AccountOrderTest` ×3 — **55 tests total**)
 - [~] Unit tests (CartService covered in feature tests; dedicated pricing tests pending)
 - [ ] CI/CD pipeline
 - [ ] Error tracking in production
@@ -184,13 +186,15 @@ Single source of truth for project completion. Legend: `[x]` done · `[~]` parti
 | ------------------------------------- | -------------------------------------- |
 | Laravel 13 + Breeze + Inertia + React | Redis, CDN, queue worker               |
 | Auth UI + tests (26 passing)          | Custom domain `paradit-x.com`          |
-| Vercel live (`e-comportf-project.vercel.app`) + committed `public/build` | CI/CD pipeline            |
-| E-commerce domain (models, migrations, JSON seeders) | Order confirmation email      |
-| Home + Shop + Product + Cart + Checkout (full flow) | My orders pages              |
-| Stripe Checkout + webhooks (test mode, code complete) | Stripe webhook URL in Dashboard for prod |
-| `ShopLayout` + shop components        | Rate limiting, Sentry, monitoring      |
-| **52 PHPUnit tests** (shop, cart, checkout, webhook) | About / Contact / Legal pages |
-| Docker local dev (PG + Redis)         |                                        |
+| Premium auth UI (Login/Register) + customer redirect to home | CI/CD pipeline            |
+| Vercel live (`e-comportf-project.vercel.app`) + committed `public/build` | Order confirmation email      |
+| E-commerce domain (models, migrations, JSON seeders) | Stripe webhook URL in Dashboard for prod |
+| Home + Shop + Product + Cart + Checkout (full flow) | About / Contact / Legal pages |
+| Stripe Checkout + webhooks (test mode, code complete) | Rate limiting, Sentry, monitoring      |
+| `ShopLayout` + shop components + `UserMenu` (account dropdown) | Admin dashboard (future) |
+| **My orders** + order detail (`/account/orders`) | Profile pages still use Breeze `AuthenticatedLayout` |
+| **55 PHPUnit tests** (shop, cart, checkout, webhook, account) | Forgot/Reset password premium UI |
+| Docker local dev (PG + Redis)         | 404 page, static content pages         |
 | Trust proxies, `/up` health check     |                                        |
 
 
@@ -241,7 +245,7 @@ app/
 | 2.4  | **DTOs**               | Stripe, checkout, API responses                  | **Done** (`CheckoutData`, `CartItemData`, `CatalogFiltersData`, `shop.d.ts`) |
 | 2.5  | **Actions**            | `CreateCheckoutSessionAction`, `HandleStripeWebhookAction`, etc. | **Done** (shop + cart + checkout + webhook) |
 | 2.6  | **Events + Listeners** | Order paid → email, stock update                 | Not started            |
-| 2.7  | **Policies**           | `OrderPolicy`, `ProductPolicy`                   | Not started            |
+| 2.7  | **Policies**           | `OrderPolicy`, `ProductPolicy`                   | Partial (`OrderPolicy` ✓) |
 | 2.8  | **Strict types**       | `declare(strict_types=1)` in PHP files           | Partial (e-commerce)   |
 | 2.9  | **Service Container**  | Interface binding (`PaymentGatewayInterface`)    | Not started            |
 | 2.10 | **Config, not .env**   | `config('services.stripe.key')`                  | Not started            |
@@ -403,7 +407,7 @@ post(route('login'));
 | `/register`               | GET/POST         | `Pages/Auth/Register.tsx`               |
 | `/forgot-password`        | GET/POST         | `Pages/Auth/ForgotPassword.tsx`         |
 | `/reset-password/{token}` | GET/POST         | `Pages/Auth/ResetPassword.tsx`          |
-| `/dashboard`              | GET              | `Pages/Dashboard.tsx` (auth + verified) |
+| `/dashboard`              | GET              | `Pages/Dashboard.tsx` (auth + verified; **reserved for future admin panel**) |
 | `/profile`                | GET/PATCH/DELETE | `Pages/Profile/Edit.tsx`                |
 
 
@@ -414,7 +418,7 @@ Verify with `php artisan route:list`.
 
 | #     | Component          | Structure                                                | Status                |
 | ----- | ------------------ | -------------------------------------------------------- | --------------------- |
-| 3.5.1 | **Layout**         | `ShopLayout.tsx` — header, cart, footer                  | **Done**              |
+| 3.5.1 | **Layout**         | `ShopLayout.tsx` — header, cart, footer, `UserMenu`      | **Done**              |
 | 3.5.2 | **Pages**          | `Pages/Shop/`, `Pages/Cart/`, `Pages/Checkout/`          | **Done**              |
 | 3.5.3 | **Components**     | `ProductCard`, `SizeSelector`, `FilterSidebar`, `ProductSearch` | **Done** (catalog + search) |
 | 3.5.4 | **Hooks**          | `useCart`, `useFormatPrice`, `useCatalogFilters`         | Partial (`useFormatPrice`, `useCatalogFilters` ✓) |
@@ -423,7 +427,7 @@ Verify with `php artisan route:list`.
 | 3.5.7 | **Asset strategy** | Local `npm run build` → commit `public/build`; Vercel serves via `@vercel/static` (no npm on deploy) | **Done** |
 
 
-**Layout strategy:** Keep Breeze `GuestLayout` / `AuthenticatedLayout` for auth; add `ShopLayout.tsx` for storefront pages. Account order pages can use `AuthenticatedLayout` or a slim `AccountLayout`.
+**Layout strategy:** Keep Breeze `GuestLayout` / `AuthenticatedLayout` for auth; `GuestLayout` wraps premium `AuthLayout` for Login/Register. Storefront uses `ShopLayout.tsx` with `UserMenu` (avatar dropdown: My orders, Profile, Sign out). Account order pages use `ShopLayout`. Profile pages still use Breeze `AuthenticatedLayout` (restyle pending).
 
 ### 3.6 Dev & deploy commands
 
@@ -580,7 +584,7 @@ flowchart TD
 
 | #    | Test                | Coverage                           | Status                       |
 | ---- | ------------------- | ---------------------------------- | ---------------------------- |
-| 10.1 | **Feature tests**   | Cart, checkout, webhook            | **Done** (26 e-commerce + 26 auth = 52 total) |
+| 10.1 | **Feature tests**   | Cart, checkout, webhook, account   | **Done** (29 e-commerce + 26 auth = 55 total) |
 | 10.2 | **Unit tests**      | Pricing, CartService               | Partial (`CartServiceTest` ×2) |
 | 10.3 | **Stripe mock**     | Mock `CreateCheckoutSessionAction` in controller tests | **Done** |
 | 10.4 | **Pest.php**        | Modern syntax                      | Not started (PHPUnit)        |
@@ -742,14 +746,14 @@ flowchart LR
 
 | #   | Page                | Route                     | Inertia component               | Purpose               | Status      |
 | --- | ------------------- | ------------------------- | ------------------------------- | --------------------- | ----------- |
-| 17  | **Login**           | `/login`                  | `Pages/Auth/Login.tsx`          | Existing customers    | **Done**    |
-| 18  | **Register**        | `/register`               | `Pages/Auth/Register.tsx`       | Create account        | **Done**    |
-| 19  | **Forgot password** | `/forgot-password`        | `Pages/Auth/ForgotPassword.tsx` | Password reset        | **Done**    |
-| 20  | **My orders**       | `/account/orders`         | `Pages/Account/Orders.tsx`      | Order history (auth)  | Not started |
-| 21  | **Order detail**    | `/account/orders/{order}` | `Pages/Account/OrderShow.tsx`   | Single order + status | Not started |
+| 17  | **Login**           | `/login`                  | `Pages/Auth/Login.tsx`          | Existing customers    | **Done** (premium UI) |
+| 18  | **Register**        | `/register`               | `Pages/Auth/Register.tsx`       | Create account        | **Done** (premium UI) |
+| 19  | **Forgot password** | `/forgot-password`        | `Pages/Auth/ForgotPassword.tsx` | Password reset        | **Done** (Breeze default UI) |
+| 20  | **My orders**       | `/account/orders`         | `Pages/Account/Orders.tsx`      | Order history (auth)  | **Done**    |
+| 21  | **Order detail**    | `/account/orders/{order}` | `Pages/Account/OrderShow.tsx`   | Single order + status | **Done**    |
 
 
-Guest checkout is enough for first demo; account pages can follow in Phase 2.
+Guest checkout works; logged-in customers see order history via header `UserMenu` → My orders.
 
 ---
 
@@ -772,7 +776,7 @@ Footer links to 22–24 on every page.
 
 | Element              | Location         | Notes                                                         |
 | -------------------- | ---------------- | ------------------------------------------------------------- |
-| **Header**           | `ShopLayout.tsx` | Logo, nav (Shop, Men, Women, Sale, New arrivals), search + autocomplete, cart icon + count |
+| **Header**           | `ShopLayout.tsx` | Logo, nav (Shop, Men, Women, Sale, New arrivals), search + autocomplete, cart icon + count, `UserMenu` (auth) or Sign in |
 | **Footer**           | `ShopLayout.tsx` | Links, social, payment icons (Stripe), copyright              |
 | **Mobile menu**      | Header           | Hamburger, categories                                         |
 | **Cart drawer**      | Optional         | Slide-over instead of full cart page on mobile                |
@@ -826,10 +830,14 @@ Footer links to 22–24 on every page.
 
 #### Account (Phase 2)
 
-- [x] Login / Register / Forgot password (Breeze)
+- [x] Login / Register / Forgot password (Breeze + premium Login/Register UI)
 - [x] Profile edit / password / delete account (Breeze)
-- [ ] My orders list
-- [ ] Order detail
+- [x] My orders list (`AccountOrderController`, `OrderPolicy`, pagination)
+- [x] Order detail (`OrderShow.tsx`, line items + status badge)
+- [x] Header account menu (`UserMenu.tsx` — initials avatar + dropdown)
+- [x] Post-auth redirect to home (`CustomerRedirect`; dashboard reserved for admin)
+- [ ] Profile pages restyled to match shop (`AuthenticatedLayout` → shop theme)
+- [ ] Forgot/Reset password pages restyled to match premium auth UI
 
 #### Legal (Phase 3)
 
@@ -857,6 +865,12 @@ resources/js/
 ├── app.tsx
 ├── bootstrap.ts
 ├── Components/              # Breeze UI + shop components
+│   ├── Auth/
+│   │   ├── AuthButton.tsx   # ✓
+│   │   ├── AuthField.tsx    # ✓
+│   │   └── AuthInput.tsx    # ✓
+│   ├── Account/
+│   │   └── OrderStatusBadge.tsx # ✓
 │   ├── ProductCard.tsx      # ✓
 │   ├── CategoryTile.tsx     # ✓
 │   ├── BrandLogo.tsx        # ✓
@@ -866,19 +880,23 @@ resources/js/
 │   │   ├── ProductSearch.tsx # ✓
 │   │   ├── FilterSidebar.tsx # ✓
 │   │   ├── CatalogPagination.tsx # ✓
-│   │   └── SizeSelector.tsx # ✓
+│   │   ├── SizeSelector.tsx # ✓
+│   │   └── UserMenu.tsx     # ✓
 │   └── …
 ├── Hooks/
 │   ├── useFormatPrice.ts    # ✓
 │   └── useCatalogFilters.ts # ✓
+├── Utils/
+│   └── orderDisplay.ts      # ✓ (status labels, date formatting)
 ├── Layouts/
 │   ├── AuthenticatedLayout.tsx   # Breeze ✓
-│   ├── GuestLayout.tsx           # Breeze ✓
+│   ├── AuthLayout.tsx            # ✓ (premium split auth layout)
+│   ├── GuestLayout.tsx           # Breeze ✓ (wraps AuthLayout)
 │   └── ShopLayout.tsx            # ✓
 ├── Pages/
 │   ├── Welcome.tsx               # Breeze ✓ (legacy; `/` uses Home.tsx)
-│   ├── Dashboard.tsx             # Breeze ✓
-│   ├── Auth/                     # Breeze ✓ (Login, Register, …)
+│   ├── Dashboard.tsx             # Breeze ✓ (reserved for admin)
+│   ├── Auth/                     # Breeze ✓ (Login, Register premium UI; Forgot/Reset default)
 │   ├── Profile/                  # Breeze ✓
 │   ├── Home.tsx                  # ✓
 │   ├── Shop/
@@ -894,8 +912,8 @@ resources/js/
 │   │   ├── Success.tsx           # ✓
 │   │   └── Cancel.tsx            # ✓
 │   ├── Account/
-│   │   ├── Orders.tsx
-│   │   └── OrderShow.tsx
+│   │   ├── Orders.tsx            # ✓
+│   │   └── OrderShow.tsx         # ✓
 │   ├── Static/
 │   │   ├── About.tsx
 │   │   ├── Contact.tsx
@@ -921,7 +939,7 @@ Quick verification before production. See **Architecture Progress Checklist** ab
 - [x] Enums + DTOs + Form Requests (`CheckoutData`, `CartItemData`, `StoreCheckoutRequest` ✓)
 - [~] `declare(strict_types=1)` on all PHP files (e-commerce + shop domain done)
 - [ ] Events/Listeners for order lifecycle
-- [ ] Policies for authorization (shop)
+- [~] Policies for authorization (`OrderPolicy` ✓; `ProductPolicy` pending)
 
 ### Infrastructure
 
@@ -952,7 +970,7 @@ Quick verification before production. See **Architecture Progress Checklist** ab
 ### Quality & ops
 
 - [x] Auth feature tests (26 passing)
-- [x] Feature tests for cart, checkout, webhook (`ShopTest` ×8, `CartTest` ×6, `CheckoutTest` ×4, `StripeWebhookTest` ×4, `CreateCheckoutSessionActionTest` ×2, `CartServiceTest` ×2 — **52 total**)
+- [x] Feature tests for cart, checkout, webhook, account (`ShopTest` ×8, `CartTest` ×6, `CheckoutTest` ×4, `StripeWebhookTest` ×4, `CreateCheckoutSessionActionTest` ×2, `CartServiceTest` ×2, `AccountOrderTest` ×3 — **55 total**)
 - [ ] Rate limiting on public endpoints
 - [ ] Error tracking (Sentry/Flare)
 - [ ] CI/CD pipeline (GitHub Actions → Vercel)
@@ -984,4 +1002,4 @@ Before first production deploy:
 
 ---
 
-*Last updated: July 2026 — Stripe Checkout + webhooks complete; Vercel asset strategy documented; 52 PHPUnit tests passing*
+*Last updated: July 2026 — Account orders + premium auth UI; CustomerRedirect; UserMenu; 55 PHPUnit tests passing*
