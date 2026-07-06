@@ -157,7 +157,7 @@ export default function CartIndex({
             return;
         }
 
-        router.visit('/checkout');
+        router.visit(route('checkout.index'));
     };
 
     return (

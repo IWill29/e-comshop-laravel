@@ -1,19 +1,43 @@
 import SizeSelector, { useSizeSelection } from '@/Components/Shop/SizeSelector';
+import InputError from '@/Components/InputError';
 import ShopLayout from '@/Layouts/ShopLayout';
 import { formatPrice } from '@/Hooks/useFormatPrice';
 import { handleImageError } from '@/lib/image';
 import { PageProps } from '@/types';
 import { ProductShowPageProps } from '@/types/shop';
-import { Head, Link } from '@inertiajs/react';
+import { Head, Link, router, usePage } from '@inertiajs/react';
+import { useState } from 'react';
 
 export default function ProductShow({ product }: PageProps<ProductShowPageProps>) {
     const { selectedSize, setSelectedSize, isValid } = useSizeSelection(product.sizes);
+    const { errors } = usePage<PageProps & { errors: Partial<Record<'size' | 'quantity', string>> }>().props;
+    const [processing, setProcessing] = useState(false);
     const price = formatPrice(product.price);
     const compareAtPrice = product.compareAtPrice
         ? formatPrice(product.compareAtPrice)
         : null;
     const onSale =
         product.compareAtPrice !== null && product.compareAtPrice > product.price;
+
+    const addToCart = () => {
+        if (selectedSize === null) {
+            return;
+        }
+
+        setProcessing(true);
+
+        router.post(
+            route('cart.store', product.slug),
+            {
+                size: selectedSize,
+                quantity: 1,
+            },
+            {
+                preserveScroll: true,
+                onFinish: () => setProcessing(false),
+            },
+        );
+    };
 
     return (
         <ShopLayout>
@@ -117,11 +141,14 @@ export default function ProductShow({ product }: PageProps<ProductShowPageProps>
 
                         <button
                             type="button"
-                            disabled={!isValid || product.stock === 0}
+                            onClick={addToCart}
+                            disabled={!isValid || product.stock === 0 || processing}
                             className="mt-8 inline-flex min-h-12 w-full items-center justify-center rounded-xl bg-indigo-600 px-6 text-sm font-semibold text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-indigo-500 hover:shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0 motion-reduce:hover:translate-y-0 sm:w-auto sm:min-w-[220px]"
                         >
-                            Add to cart
+                            {processing ? 'Adding…' : 'Add to cart'}
                         </button>
+
+                        <InputError message={errors?.size ?? errors?.quantity} className="mt-2" />
 
                         {!isValid && product.stock > 0 && (
                             <p className="mt-2 text-xs text-stone-500">

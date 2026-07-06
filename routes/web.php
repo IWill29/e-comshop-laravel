@@ -17,8 +17,15 @@ Route::get('/search', [ShopController::class, 'search'])->name('shop.search');
 Route::get('/sale', [ShopController::class, 'sale'])->name('shop.sale');
 Route::get('/new-arrivals', [ShopController::class, 'newArrivals'])->name('shop.new-arrivals');
 Route::get('/products/{product:slug}', [ProductController::class, 'show'])->name('products.show');
+Route::post('/products/{product:slug}/cart', [CartController::class, 'store'])->name('cart.store');
 
 Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+Route::patch('/cart/items/{key}', [CartController::class, 'update'])
+    ->where('key', '[0-9]+-[0-9]+')
+    ->name('cart.items.update');
+Route::delete('/cart/items/{key}', [CartController::class, 'destroy'])
+    ->where('key', '[0-9]+-[0-9]+')
+    ->name('cart.items.destroy');
 
 Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
 Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');

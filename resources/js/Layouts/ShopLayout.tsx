@@ -12,7 +12,7 @@ const navLinks = [
 ];
 
 export default function ShopLayout({ children }: PropsWithChildren) {
-    const { auth } = usePage<PageProps>().props;
+    const { auth, cartCount } = usePage<PageProps>().props;
     const [mobileOpen, setMobileOpen] = useState(false);
 
     useEffect(() => {
@@ -59,9 +59,9 @@ export default function ShopLayout({ children }: PropsWithChildren) {
                         />
 
                         <Link
-                            href="/cart"
+                            href={route('cart.index')}
                             className="relative flex h-11 w-11 items-center justify-center rounded-xl text-stone-600 transition hover:bg-stone-100 hover:text-stone-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
-                            aria-label="Cart"
+                            aria-label={cartCount > 0 ? `Cart, ${cartCount} items` : 'Cart'}
                         >
                             <svg
                                 className="h-5 w-5"
@@ -76,6 +76,11 @@ export default function ShopLayout({ children }: PropsWithChildren) {
                                     d="M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m11.356-1.993 1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 0 1-1.12-1.243l1.264-12A1.125 1.125 0 0 1 5.513 7.5h12.974c.576 0 1.059.435 1.119 1.007ZM8.625 10.5a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm7.5 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z"
                                 />
                             </svg>
+                            {cartCount > 0 && (
+                                <span className="absolute -right-0.5 -top-0.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-indigo-600 px-1 text-[10px] font-bold text-white">
+                                    {cartCount > 99 ? '99+' : cartCount}
+                                </span>
+                            )}
                         </Link>
 
                         {auth.user ? (

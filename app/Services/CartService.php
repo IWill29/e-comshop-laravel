@@ -157,9 +157,178 @@ class CartService
         );
     }
 
+    /**
+     * @return list<array<string, mixed>>
+     */
+    public function toCartPageItems(): array
+    {
+        $items = $this->items();
+
+        if ($items === []) {
+            return [];
+        }
+
+        $products = Product::query()
+            ->whereIn('id', array_unique(array_map(
+                fn (CartItemData $item): int => $item->productId,
+                $items,
+            )))
+            ->where('is_active', true)
+            ->get()
+            ->keyBy('id');
+
+        $pageItems = [];
+        $synced = [];
+
+        foreach ($items as $item) {
+            $product = $products->get($item->productId);
+
+            if ($product === null) {
+                continue;
+            }
+
+            $sizes = $product->sizes;
+
+            if (! is_array($sizes) || ! in_array($item->size, $sizes, true)) {
+                continue;
+            }
+
+            if ($product->stock < 1) {
+                continue;
+            }
+
+            $quantity = min($item->quantity, $product->stock);
+            $syncedItem = CartItemData::fromProduct($product, $item->size, $quantity);
+            $synced[] = $syncedItem;
+
+            $pageItems[] = [
+                'key' => $syncedItem->key(),
+                'productId' => $syncedItem->productId,
+                'name' => $syncedItem->name,
+                'slug' => $syncedItem->slug,
+                'brand' => $syncedItem->brand,
+                'color' => $product->color,
+                'imageUrl' => $syncedItem->imageUrl,
+                'size' => $syncedItem->size,
+                'quantity' => $syncedItem->quantity,
+                'unitPrice' => $syncedItem->unitPrice,
+                'lineTotal' => $syncedItem->lineTotal(),
+                'maxQuantity' => $product->stock,
+            ];
+        }
+
+        if (! $this->itemsMatch($items, $synced)) {
+            $this->persist($synced);
+        }
+
+        return $pageItems;
+    }
+
+    public function updateQuantity(string $key, int $quantity): void
+    {
+        if ($quantity < 1) {
+            throw ValidationException::withMessages([
+                'quantity' => 'Quantity must be at least 1.',
+            ]);
+        }
+
+        $item = $this->findItem($key);
+
+        if ($item === null) {
+            throw ValidationException::withMessages([
+                'cart' => 'That cart item is no longer available.',
+            ]);
+        }
+
+        $product = Product::query()
+            ->where('id', $item->productId)
+            ->where('is_active', true)
+            ->first();
+
+        if ($product === null) {
+            $this->remove($key);
+
+            throw ValidationException::withMessages([
+                'cart' => 'A product in your cart is no longer available.',
+            ]);
+        }
+
+        $sizes = $product->sizes;
+
+        if (! is_array($sizes) || ! in_array($item->size, $sizes, true)) {
+            $this->remove($key);
+
+            throw ValidationException::withMessages([
+                'cart' => 'A selected size in your cart is no longer available.',
+            ]);
+        }
+
+        if ($product->stock < $quantity) {
+            throw ValidationException::withMessages([
+                'quantity' => 'Not enough stock for the selected quantity.',
+            ]);
+        }
+
+        $items = $this->items();
+        $indexed = [];
+
+        foreach ($items as $cartItem) {
+            $indexed[$cartItem->key()] = $cartItem;
+        }
+
+        $indexed[$key] = CartItemData::fromProduct($product, $item->size, $quantity);
+        $this->persist(array_values($indexed));
+    }
+
+    public function remove(string $key): void
+    {
+        $remaining = array_values(array_filter(
+            $this->items(),
+            fn (CartItemData $item): bool => $item->key() !== $key,
+        ));
+
+        $this->persist($remaining);
+    }
+
     public function clear(): void
     {
         $this->session->forget(self::SESSION_KEY);
+    }
+
+    private function findItem(string $key): ?CartItemData
+    {
+        foreach ($this->items() as $item) {
+            if ($item->key() === $key) {
+                return $item;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * @param  list<CartItemData>  $current
+     * @param  list<CartItemData>  $synced
+     */
+    private function itemsMatch(array $current, array $synced): bool
+    {
+        if (count($current) !== count($synced)) {
+            return false;
+        }
+
+        foreach ($current as $index => $item) {
+            $other = $synced[$index] ?? null;
+
+            if ($other === null) {
+                return false;
+            }
+
+            if ($item->toArray() !== $other->toArray()) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /**
