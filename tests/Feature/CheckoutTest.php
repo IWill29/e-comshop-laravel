@@ -8,6 +8,7 @@ use App\Actions\CreateCheckoutSessionAction;
 use App\Models\Product;
 use App\Services\CartService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Inertia\Support\Header;
 use Tests\TestCase;
 
 class CheckoutTest extends TestCase
@@ -41,6 +42,30 @@ class CheckoutTest extends TestCase
         $this->from(route('checkout.index'))
             ->post(route('checkout.store'), $this->validCheckoutPayload())
             ->assertRedirect('https://checkout.stripe.com/test-session');
+    }
+
+    public function test_store_returns_inertia_location_header_for_external_stripe_redirect(): void
+    {
+        $product = Product::factory()->create([
+            'sizes' => [42],
+            'stock' => 5,
+        ]);
+
+        app(CartService::class)->add($product, 42, 1);
+
+        $this->mock(CreateCheckoutSessionAction::class, function ($mock): void {
+            $mock->shouldReceive('handle')
+                ->once()
+                ->andReturn('https://checkout.stripe.com/test-session');
+        });
+
+        $this->from(route('checkout.index'))
+            ->withHeaders([
+                Header::INERTIA => 'true',
+            ])
+            ->post(route('checkout.store'), $this->validCheckoutPayload())
+            ->assertStatus(409)
+            ->assertHeader(Header::LOCATION, 'https://checkout.stripe.com/test-session');
     }
 
     public function test_store_validates_checkout_fields(): void

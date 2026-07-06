@@ -13,6 +13,8 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
+use Inertia\Support\Header;
+use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 
 class CheckoutController extends Controller
 {
@@ -37,13 +39,13 @@ class CheckoutController extends Controller
     public function store(
         StoreCheckoutRequest $request,
         CreateCheckoutSessionAction $createCheckoutSession,
-    ): RedirectResponse {
+    ): RedirectResponse|SymfonyResponse {
         $checkoutUrl = $createCheckoutSession->handle(
             CheckoutData::fromValidated($request->validated()),
             $request->user(),
         );
 
-        return redirect()->away($checkoutUrl);
+        return Inertia::location($checkoutUrl);
     }
 
     public function success(Request $request): Response
