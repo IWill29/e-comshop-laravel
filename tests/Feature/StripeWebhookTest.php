@@ -143,7 +143,7 @@ class StripeWebhookTest extends TestCase
     private function postStripeWebhook(string $type, array $session): TestResponse
     {
         $payload = json_encode([
-            'id' => 'evt_test_'.md5($type.serialize($session)),
+            'id' => 'evt_test_'.hash('sha256', $type.serialize($session)),
             'object' => 'event',
             'type' => $type,
             'data' => [
