@@ -177,3 +177,27 @@ export type CheckoutSuccessPageProps = {
 export type CheckoutCancelPageProps = {
     message?: string | null;
 };
+
+export interface AccountOrderSummary {
+    id: number;
+    number: string;
+    total: number;
+    currency: string;
+    status: string;
+    paymentStatus: string;
+    itemCount: number;
+    placedAt: string;
+}
+
+export interface AccountOrderDetail extends AccountOrderSummary {
+    email: string;
+    items: CheckoutOrderItem[];
+}
+
+export type AccountOrdersPageProps = {
+    orders: Paginated<AccountOrderSummary>;
+};
+
+export type AccountOrderShowPageProps = {
+    order: AccountOrderDetail;
+};
