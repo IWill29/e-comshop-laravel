@@ -171,4 +171,22 @@ class ShopTest extends TestCase
             ->assertOk()
             ->assertJsonCount(0, 'suggestions');
     }
+
+    public function test_search_is_case_insensitive(): void
+    {
+        $product = Product::factory()->create(['name' => 'Classic Runner', 'brand' => 'Adidas']);
+
+        $this->getJson(route('shop.search.suggestions', ['q' => 'adidas']))
+            ->assertOk()
+            ->assertJsonCount(1, 'suggestions')
+            ->assertJsonPath('suggestions.0.id', $product->id);
+
+        $this->get(route('shop.search', ['q' => 'classic']))
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('Shop/Search')
+                ->has('products.data', 1)
+                ->where('products.data.0.id', $product->id)
+            );
+    }
 }

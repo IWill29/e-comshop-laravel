@@ -87,13 +87,14 @@ class Product extends Model
             return $query;
         }
 
-        $like = '%'.addcslashes($term, '%_\\').'%';
+        $pattern = '%'.addcslashes($term, '%_\\').'%';
+        $operator = $query->getConnection()->getDriverName() === 'pgsql' ? 'ilike' : 'like';
 
-        return $query->where(function (Builder $builder) use ($like): void {
+        return $query->where(function (Builder $builder) use ($pattern, $operator): void {
             $builder
-                ->where('name', 'like', $like)
-                ->orWhere('brand', 'like', $like)
-                ->orWhere('sku', 'like', $like);
+                ->where('name', $operator, $pattern)
+                ->orWhere('brand', $operator, $pattern)
+                ->orWhere('sku', $operator, $pattern);
         });
     }
 
