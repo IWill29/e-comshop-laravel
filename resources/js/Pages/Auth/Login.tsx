@@ -39,13 +39,12 @@ export default function Login({
             <Head title="Sign in" />
 
             {status && (
-                <div
-                    className="auth-enter mb-6 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-800"
+                <output
+                    className="auth-enter mb-6 block rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-800"
                     style={{ animationDelay: '50ms' }}
-                    role="status"
                 >
                     {status}
-                </div>
+                </output>
             )}
 
             <form onSubmit={submit} className="space-y-5">

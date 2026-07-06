@@ -1,45 +1,10 @@
+import OrderStatusBadge from '@/Components/Account/OrderStatusBadge';
 import { formatPrice } from '@/Hooks/useFormatPrice';
 import ShopLayout from '@/Layouts/ShopLayout';
 import { PageProps } from '@/types';
 import { AccountOrderShowPageProps } from '@/types/shop';
+import { formatOrderDate } from '@/Utils/orderDisplay';
 import { Head, Link } from '@inertiajs/react';
-
-function formatOrderDate(isoDate: string): string {
-    return new Intl.DateTimeFormat('en-US', {
-        dateStyle: 'long',
-        timeStyle: 'short',
-    }).format(new Date(isoDate));
-}
-
-function statusLabel(status: string): string {
-    switch (status) {
-        case 'paid':
-            return 'Paid';
-        case 'pending':
-            return 'Pending';
-        case 'cancelled':
-            return 'Cancelled';
-        case 'refunded':
-            return 'Refunded';
-        default:
-            return status;
-    }
-}
-
-function statusClasses(status: string): string {
-    switch (status) {
-        case 'paid':
-            return 'bg-emerald-50 text-emerald-700 ring-emerald-100';
-        case 'pending':
-            return 'bg-amber-50 text-amber-700 ring-amber-100';
-        case 'cancelled':
-            return 'bg-stone-100 text-stone-600 ring-stone-200';
-        case 'refunded':
-            return 'bg-indigo-50 text-indigo-700 ring-indigo-100';
-        default:
-            return 'bg-stone-100 text-stone-600 ring-stone-200';
-    }
-}
 
 export default function OrderShow({ order }: PageProps<AccountOrderShowPageProps>) {
     return (
@@ -75,7 +40,7 @@ export default function OrderShow({ order }: PageProps<AccountOrderShowPageProps
                                 Order #{order.number}
                             </h1>
                             <p className="mt-2 text-sm text-stone-600">
-                                Placed on {formatOrderDate(order.placedAt)}
+                                Placed on {formatOrderDate(order.placedAt, 'long')}
                             </p>
                             <p className="mt-1 text-sm text-stone-500">
                                 Receipt sent to{' '}
@@ -84,11 +49,7 @@ export default function OrderShow({ order }: PageProps<AccountOrderShowPageProps
                                 </span>
                             </p>
                         </div>
-                        <span
-                            className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ring-1 ${statusClasses(order.status)}`}
-                        >
-                            {statusLabel(order.status)}
-                        </span>
+                        <OrderStatusBadge status={order.status} className="px-3 py-1" />
                     </div>
 
                     <div className="mt-8 rounded-xl border border-stone-100 bg-stone-50/80 p-5 sm:p-6">

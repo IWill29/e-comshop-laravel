@@ -33,7 +33,7 @@ class OrderController extends Controller
         ]);
     }
 
-    public function show(Request $request, Order $order): Response
+    public function show(Order $order): Response
     {
         $this->authorize('view', $order);
 

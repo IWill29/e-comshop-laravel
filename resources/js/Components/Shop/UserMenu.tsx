@@ -2,9 +2,12 @@ import Dropdown from '@/Components/Dropdown';
 import { User } from '@/types';
 import { Link } from '@inertiajs/react';
 
-type UserMenuProps = {
+type UserMenuProps = Readonly<{
     user: User;
-};
+}>;
+
+const menuLinkClassName =
+    'px-4 py-2.5 text-sm text-stone-700 transition-[background-color,color] duration-150 ease-out hover:bg-stone-50 hover:text-stone-900 focus:bg-stone-50';
 
 export default function UserMenu({ user }: UserMenuProps) {
     const initials = user.name
@@ -42,14 +45,14 @@ export default function UserMenu({ user }: UserMenuProps) {
 
                 <Dropdown.Link
                     href={route('account.orders.index')}
-                    className="px-4 py-2.5 text-sm text-stone-700 transition-[background-color,color] duration-150 ease-out hover:bg-stone-50 hover:text-stone-900 focus:bg-stone-50"
+                    className={menuLinkClassName}
                 >
                     My orders
                 </Dropdown.Link>
 
                 <Dropdown.Link
                     href={route('profile.edit')}
-                    className="px-4 py-2.5 text-sm text-stone-700 transition-[background-color,color] duration-150 ease-out hover:bg-stone-50 hover:text-stone-900 focus:bg-stone-50"
+                    className={menuLinkClassName}
                 >
                     Profile settings
                 </Dropdown.Link>
@@ -59,7 +62,7 @@ export default function UserMenu({ user }: UserMenuProps) {
                         href={route('logout')}
                         method="post"
                         as="button"
-                        className="px-4 py-2.5 text-sm text-stone-700 transition-[background-color,color] duration-150 ease-out hover:bg-stone-50 hover:text-stone-900 focus:bg-stone-50"
+                        className={menuLinkClassName}
                     >
                         Sign out
                     </Dropdown.Link>
