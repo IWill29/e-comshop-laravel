@@ -1,0 +1,20 @@
+import { ButtonHTMLAttributes } from 'react';
+
+export default function AuthButton({
+    className = '',
+    disabled,
+    children,
+    ...props
+}: ButtonHTMLAttributes<HTMLButtonElement>) {
+    return (
+        <button
+            {...props}
+            className={
+                `inline-flex min-h-11 w-full items-center justify-center rounded-xl bg-indigo-600 px-6 py-3 text-sm font-semibold text-white shadow-sm shadow-indigo-600/20 transition-[transform,background-color,box-shadow] duration-[160ms] ease-out hover:bg-indigo-500 hover:shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 active:scale-[0.97] motion-reduce:active:scale-100 disabled:pointer-events-none disabled:opacity-50 ${className}`
+            }
+            disabled={disabled}
+        >
+            {children}
+        </button>
+    );
+}

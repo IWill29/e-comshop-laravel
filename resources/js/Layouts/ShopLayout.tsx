@@ -1,4 +1,5 @@
 import ProductSearch from '@/Components/Shop/ProductSearch';
+import UserMenu from '@/Components/Shop/UserMenu';
 import { Link, usePage } from '@inertiajs/react';
 import { PropsWithChildren, useEffect, useState } from 'react';
 import { PageProps } from '@/types';
@@ -84,12 +85,9 @@ export default function ShopLayout({ children }: PropsWithChildren) {
                         </Link>
 
                         {auth.user ? (
-                            <Link
-                                href={route('dashboard')}
-                                className="hidden h-11 items-center rounded-xl px-4 text-sm font-medium text-stone-600 transition hover:bg-stone-100 hover:text-stone-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 md:inline-flex"
-                            >
-                                Account
-                            </Link>
+                            <div className="hidden md:block">
+                                <UserMenu user={auth.user} />
+                            </div>
                         ) : (
                             <Link
                                 href={route('login')}
@@ -98,13 +96,6 @@ export default function ShopLayout({ children }: PropsWithChildren) {
                                 Sign in
                             </Link>
                         )}
-
-                        <Link
-                            href="/shop"
-                            className="hidden h-11 items-center rounded-xl bg-indigo-600 px-4 text-sm font-semibold text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-indigo-500 hover:shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 motion-reduce:hover:translate-y-0 md:inline-flex"
-                        >
-                            Shop all
-                        </Link>
 
                         <button
                             type="button"
@@ -161,7 +152,7 @@ export default function ShopLayout({ children }: PropsWithChildren) {
                                     Shop all
                                 </Link>
                             </li>
-                            {!auth.user && (
+                            {!auth.user ? (
                                 <li>
                                     <Link
                                         href={route('login')}
@@ -171,6 +162,38 @@ export default function ShopLayout({ children }: PropsWithChildren) {
                                         Sign in
                                     </Link>
                                 </li>
+                            ) : (
+                                <>
+                                    <li>
+                                        <Link
+                                            href={route('account.orders.index')}
+                                            className="flex min-h-11 items-center rounded-xl px-3 text-sm font-medium text-stone-700 hover:bg-stone-100"
+                                            onClick={() => setMobileOpen(false)}
+                                        >
+                                            My orders
+                                        </Link>
+                                    </li>
+                                    <li>
+                                        <Link
+                                            href={route('profile.edit')}
+                                            className="flex min-h-11 items-center rounded-xl px-3 text-sm font-medium text-stone-700 hover:bg-stone-100"
+                                            onClick={() => setMobileOpen(false)}
+                                        >
+                                            Profile settings
+                                        </Link>
+                                    </li>
+                                    <li>
+                                        <Link
+                                            href={route('logout')}
+                                            method="post"
+                                            as="button"
+                                            className="flex min-h-11 w-full items-center rounded-xl px-3 text-left text-sm font-medium text-stone-700 hover:bg-stone-100"
+                                            onClick={() => setMobileOpen(false)}
+                                        >
+                                            Sign out
+                                        </Link>
+                                    </li>
+                                </>
                             )}
                         </ul>
                     </nav>
@@ -225,7 +248,10 @@ export default function ShopLayout({ children }: PropsWithChildren) {
                             </h4>
                             <ul className="mt-4 space-y-2.5 text-sm">
                                 {auth.user ? (
-                                    <li><Link href={route('dashboard')} className="inline-flex min-h-8 items-center text-stone-600 hover:text-stone-900">Dashboard</Link></li>
+                                    <>
+                                        <li><Link href={route('account.orders.index')} className="inline-flex min-h-8 items-center text-stone-600 hover:text-stone-900">My orders</Link></li>
+                                        <li><Link href={route('profile.edit')} className="inline-flex min-h-8 items-center text-stone-600 hover:text-stone-900">Profile settings</Link></li>
+                                    </>
                                 ) : (
                                     <>
                                         <li><Link href={route('login')} className="inline-flex min-h-8 items-center text-stone-600 hover:text-stone-900">Sign in</Link></li>
