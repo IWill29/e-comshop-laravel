@@ -5,15 +5,36 @@ import ShopLayout from '@/Layouts/ShopLayout';
 import { handleImageError } from '@/lib/image';
 import { HomePageProps } from '@/types/shop';
 import { PageProps } from '@/types';
-import { Head, Link } from '@inertiajs/react';
+import { Head, Link, WhenVisible } from '@inertiajs/react';
+
+const SKELETON_KEYS = ['sk-a', 'sk-b', 'sk-c', 'sk-d', 'sk-e', 'sk-f', 'sk-g', 'sk-h'] as const;
+
+function ProductGridSkeleton({ count = 4 }: Readonly<{ count?: number }>) {
+    return (
+        <div className="mt-8 grid grid-cols-2 gap-3 min-[480px]:gap-4 sm:mt-10 sm:gap-5 md:grid-cols-3 md:gap-6 lg:grid-cols-4">
+            {SKELETON_KEYS.slice(0, count).map((key) => (
+                <div
+                    key={key}
+                    className="animate-pulse overflow-hidden rounded-2xl bg-stone-200/80"
+                >
+                    <div className="aspect-[4/5] bg-stone-200" />
+                    <div className="space-y-2 p-3">
+                        <div className="h-3 w-2/3 rounded bg-stone-200" />
+                        <div className="h-4 w-1/2 rounded bg-stone-200" />
+                    </div>
+                </div>
+            ))}
+        </div>
+    );
+}
 
 export default function Home({
+    heroImageUrl,
+    heroProduct,
     featuredProducts,
-    newArrivals,
+    newArrivals = [],
     categories,
-}: PageProps<HomePageProps>) {
-    const heroProduct = featuredProducts[0];
-
+}: Readonly<PageProps<HomePageProps>>) {
     return (
         <ShopLayout>
             <Head title="Shoes for every stride" />
@@ -90,9 +111,14 @@ export default function Home({
                             >
                                 <div className="overflow-hidden rounded-2xl bg-stone-900 ring-1 ring-white/10 transition duration-500 group-hover:-translate-y-2 motion-reduce:transition-none motion-reduce:group-hover:translate-y-0 sm:rounded-[2rem]">
                                     <img
-                                        src={heroProduct.imageUrl}
+                                        src={heroImageUrl ?? heroProduct.imageUrl}
                                         alt={heroProduct.name}
+                                        width={1200}
+                                        height={960}
+                                        loading="eager"
+                                        decoding="async"
                                         onError={handleImageError}
+                                        fetchPriority="high"
                                         className="aspect-[4/3] w-full object-cover transition duration-700 group-hover:scale-105 motion-reduce:transition-none motion-reduce:group-hover:scale-100 sm:aspect-[5/4]"
                                     />
                                 </div>
@@ -159,11 +185,10 @@ export default function Home({
                         </div>
 
                         <div className="mt-8 grid grid-cols-2 gap-3 min-[480px]:gap-4 sm:mt-10 sm:gap-5 md:grid-cols-3 md:gap-6 lg:grid-cols-4">
-                            {featuredProducts.map((product, index) => (
+                            {featuredProducts.map((product) => (
                                 <ProductCard
                                     key={product.id}
                                     product={product}
-                                    priority={index < 2}
                                 />
                             ))}
                         </div>
@@ -171,35 +196,57 @@ export default function Home({
                 </section>
             )}
 
-            {/* New arrivals */}
-            {newArrivals.length > 0 && (
-                <section className="border-t border-stone-200 bg-stone-100/60 py-12 sm:py-16 md:py-20">
-                    <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                        <div className="flex items-end justify-between gap-3">
-                            <div className="min-w-0">
-                                <h2 className="font-display text-xl font-bold text-stone-900 sm:text-2xl md:text-3xl">
-                                    New arrivals
-                                </h2>
-                                <p className="mt-1 text-sm text-stone-600">
-                                    Fresh drops, just landed
-                                </p>
+            {/* New arrivals — lazy load when scrolled near (Inertia WhenVisible) */}
+            <WhenVisible
+                data="newArrivals"
+                buffer={600}
+                fallback={
+                    <section className="border-t border-stone-200 bg-stone-100/60 py-12 sm:py-16 md:py-20">
+                        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                            <div className="flex items-end justify-between gap-3">
+                                <div className="min-w-0">
+                                    <h2 className="font-display text-xl font-bold text-stone-900 sm:text-2xl md:text-3xl">
+                                        New arrivals
+                                    </h2>
+                                    <p className="mt-1 text-sm text-stone-600">
+                                        Fresh drops, just landed
+                                    </p>
+                                </div>
                             </div>
-                            <Link
-                                href="/new-arrivals"
-                                className="shrink-0 text-sm font-semibold text-indigo-600 hover:text-indigo-500"
-                            >
-                                See all
-                            </Link>
+                            <ProductGridSkeleton count={4} />
                         </div>
+                    </section>
+                }
+            >
+                {newArrivals.length > 0 && (
+                    <section className="border-t border-stone-200 bg-stone-100/60 py-12 sm:py-16 md:py-20">
+                        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                            <div className="flex items-end justify-between gap-3">
+                                <div className="min-w-0">
+                                    <h2 className="font-display text-xl font-bold text-stone-900 sm:text-2xl md:text-3xl">
+                                        New arrivals
+                                    </h2>
+                                    <p className="mt-1 text-sm text-stone-600">
+                                        Fresh drops, just landed
+                                    </p>
+                                </div>
+                                <Link
+                                    href="/new-arrivals"
+                                    className="shrink-0 text-sm font-semibold text-indigo-600 hover:text-indigo-500"
+                                >
+                                    See all
+                                </Link>
+                            </div>
 
-                        <div className="mt-8 grid grid-cols-2 gap-3 min-[480px]:gap-4 sm:mt-10 sm:gap-5 md:grid-cols-3 md:gap-6 lg:grid-cols-4">
-                            {newArrivals.map((product) => (
-                                <ProductCard key={product.id} product={product} />
-                            ))}
+                            <div className="mt-8 grid grid-cols-2 gap-3 min-[480px]:gap-4 sm:mt-10 sm:gap-5 md:grid-cols-3 md:gap-6 lg:grid-cols-4">
+                                {newArrivals.map((product) => (
+                                    <ProductCard key={product.id} product={product} />
+                                ))}
+                            </div>
                         </div>
-                    </div>
-                </section>
-            )}
+                    </section>
+                )}
+            </WhenVisible>
 
             {/* CTA band */}
             <section className="relative overflow-x-clip bg-stone-950 py-12 sm:py-16 md:py-20">

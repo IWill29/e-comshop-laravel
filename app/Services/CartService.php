@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\DTOs\CartItemData;
+use App\Enums\ProductImageSize;
 use App\Models\Product;
+use App\Services\ProductImageService;
 use Illuminate\Contracts\Session\Session;
 use Illuminate\Validation\ValidationException;
 
@@ -17,6 +19,7 @@ class CartService
 
     public function __construct(
         private Session $session,
+        private ProductImageService $images,
     ) {}
 
     /**
@@ -208,7 +211,7 @@ class CartService
                 'slug' => $syncedItem->slug,
                 'brand' => $syncedItem->brand,
                 'color' => $product->color,
-                'imageUrl' => $syncedItem->imageUrl,
+                'imageUrl' => $this->images->url($syncedItem->imageUrl, ProductImageSize::Cart),
                 'size' => $syncedItem->size,
                 'quantity' => $syncedItem->quantity,
                 'unitPrice' => $syncedItem->unitPrice,

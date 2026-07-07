@@ -3,9 +3,9 @@ set -e
 
 cd /var/www/html
 
-if [ "$(id -u)" = "0" ]; then
-    chown -R www-data:www-data storage bootstrap/cache 2>/dev/null || true
-fi
+git config --global --add safe.directory /var/www/html 2>/dev/null || true
+
+chown -R www-data:www-data storage bootstrap/cache 2>/dev/null || true
 
 setup_needed=false
 [ ! -f vendor/autoload.php ] && setup_needed=true
@@ -16,6 +16,7 @@ setup_needed=false
 if [ "$setup_needed" = "true" ]; then
     if [ ! -f vendor/autoload.php ]; then
         composer install --no-interaction --prefer-dist --optimize-autoloader --no-progress
+        chown -R www-data:www-data vendor 2>/dev/null || true
     fi
 
     if [ ! -f .env ]; then
@@ -31,11 +32,14 @@ if [ "$setup_needed" = "true" ]; then
         npm run build
     fi
 
-    if [ "$(id -u)" = "0" ]; then
-        chown -R www-data:www-data storage bootstrap/cache public/build 2>/dev/null || true
-    fi
+    chown -R www-data:www-data storage bootstrap/cache public/build vendor 2>/dev/null || true
 fi
 
 php artisan migrate --force --no-interaction || true
+
+if [ "${DOCKER_ROUTE_CACHE:-1}" = "1" ]; then
+    php artisan route:cache --no-interaction 2>/dev/null || true
+    php artisan view:cache --no-interaction 2>/dev/null || true
+fi
 
 exec "$@"

@@ -8,10 +8,12 @@ use App\DTOs\CartItemData;
 use App\DTOs\CheckoutData;
 use App\Enums\OrderStatus;
 use App\Enums\PaymentStatus;
+use App\Enums\ProductImageSize;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\User;
 use App\Services\CartService;
+use App\Services\ProductImageService;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
@@ -24,6 +26,7 @@ class CreateCheckoutSessionAction
 {
     public function __construct(
         private CartService $cart,
+        private ProductImageService $images,
     ) {}
 
     public function handle(CheckoutData $checkout, ?User $user): string
@@ -251,7 +254,9 @@ class CreateCheckoutSessionAction
             ];
 
             if ($item->imageUrl !== '') {
-                $productData['images'] = [$item->imageUrl];
+                $productData['images'] = [
+                    $this->images->url($item->imageUrl, ProductImageSize::Card),
+                ];
             }
 
             $lineItems[] = [
