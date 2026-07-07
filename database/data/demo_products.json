@@ -9,9 +9,16 @@
         "category": "sneakers",
         "price": 12999,
         "stock": 24,
-        "sizes": [40, 41, 42, 43, 44, 45],
+        "sizes": [
+            40,
+            41,
+            42,
+            43,
+            44,
+            45
+        ],
         "is_featured": true,
-        "image_url": "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=800&q=80",
+        "image_url": "nike-air-max-90",
         "description": "Classic Nike Air Max 90 with visible Air cushioning and durable rubber outsole."
     },
     {
@@ -24,9 +31,17 @@
         "category": "running",
         "price": 17999,
         "stock": 18,
-        "sizes": [38, 39, 40, 41, 42, 43, 44],
+        "sizes": [
+            38,
+            39,
+            40,
+            41,
+            42,
+            43,
+            44
+        ],
         "is_featured": true,
-        "image_url": "https://images.unsplash.com/photo-1606107557195-0be29b4b5b0b?w=800&q=80",
+        "image_url": "adidas-ultraboost-22",
         "description": "Responsive Boost midsole and Primeknit upper for all-day comfort on the run."
     },
     {
@@ -39,9 +54,18 @@
         "category": "casual",
         "price": 9999,
         "stock": 30,
-        "sizes": [38, 39, 40, 41, 42, 43, 44, 45],
+        "sizes": [
+            38,
+            39,
+            40,
+            41,
+            42,
+            43,
+            44,
+            45
+        ],
         "is_featured": true,
-        "image_url": "https://images.unsplash.com/photo-1608231388042-1630b4e282a9?w=800&q=80",
+        "image_url": "new-balance-574",
         "description": "Heritage runner silhouette with ENCAP midsole support for everyday wear."
     },
     {
@@ -55,9 +79,15 @@
         "price": 10999,
         "compare_at_price": 12999,
         "stock": 15,
-        "sizes": [41, 42, 43, 44, 45],
+        "sizes": [
+            41,
+            42,
+            43,
+            44,
+            45
+        ],
         "is_featured": false,
-        "image_url": "https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?w=800&q=80",
+        "image_url": "puma-rs-x",
         "description": "Bold chunky design with RS running system cushioning."
     },
     {
@@ -70,9 +100,16 @@
         "category": "boots",
         "price": 19999,
         "stock": 12,
-        "sizes": [41, 42, 43, 44, 45, 46],
+        "sizes": [
+            41,
+            42,
+            43,
+            44,
+            45,
+            46
+        ],
         "is_featured": true,
-        "image_url": "https://images.unsplash.com/photo-1608256246330-53e6090a2b9a?w=800&q=80",
+        "image_url": "timberland-6-inch-boot",
         "description": "Waterproof nubuck leather boot with padded collar and lug outsole."
     },
     {
@@ -85,9 +122,17 @@
         "category": "boots",
         "price": 16999,
         "stock": 20,
-        "sizes": [38, 39, 40, 41, 42, 43, 44],
+        "sizes": [
+            38,
+            39,
+            40,
+            41,
+            42,
+            43,
+            44
+        ],
         "is_featured": false,
-        "image_url": "https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?w=800&q=80",
+        "image_url": "dr-martens-1460",
         "description": "Iconic 8-eye lace-up boot with AirWair bouncing soles."
     },
     {
@@ -100,9 +145,17 @@
         "category": "sandals",
         "price": 8999,
         "stock": 25,
-        "sizes": [38, 39, 40, 41, 42, 43, 44],
+        "sizes": [
+            38,
+            39,
+            40,
+            41,
+            42,
+            43,
+            44
+        ],
         "is_featured": false,
-        "image_url": "https://images.unsplash.com/photo-1603487742131-4160ec966093?w=800&q=80",
+        "image_url": "birkenstock-arizona",
         "description": "Two-strap sandal with anatomically shaped cork-latex footbed."
     },
     {
@@ -115,9 +168,16 @@
         "category": "running",
         "price": 6499,
         "stock": 22,
-        "sizes": [36, 37, 38, 39, 40, 41],
+        "sizes": [
+            36,
+            37,
+            38,
+            39,
+            40,
+            41
+        ],
         "is_featured": false,
-        "image_url": "https://images.unsplash.com/photo-1595341888016-a392ef81b1de?w=800&q=80",
+        "image_url": "nike-revolution-6",
         "description": "Lightweight everyday running shoe with soft foam midsole."
     },
     {
@@ -130,9 +190,18 @@
         "category": "casual",
         "price": 8499,
         "stock": 28,
-        "sizes": [38, 39, 40, 41, 42, 43, 44, 45],
+        "sizes": [
+            38,
+            39,
+            40,
+            41,
+            42,
+            43,
+            44,
+            45
+        ],
         "is_featured": false,
-        "image_url": "https://images.unsplash.com/photo-1525966222134-fcfa99b8d077?w=800&q=80",
+        "image_url": "converse-chuck-70",
         "description": "Premium canvas high top with thicker sole and vintage details."
     },
     {
@@ -145,9 +214,16 @@
         "category": "casual",
         "price": 9499,
         "stock": 19,
-        "sizes": [36, 37, 38, 39, 40, 41],
+        "sizes": [
+            36,
+            37,
+            38,
+            39,
+            40,
+            41
+        ],
         "is_featured": false,
-        "image_url": "https://images.unsplash.com/photo-1560769629-975ec94d6a86?w=800&q=80",
+        "image_url": "adidas-stan-smith",
         "description": "Minimal leather tennis shoe with perforated 3-Stripes."
     },
     {
@@ -160,9 +236,15 @@
         "category": "womens",
         "price": 7499,
         "stock": 16,
-        "sizes": [36, 37, 38, 39, 40],
+        "sizes": [
+            36,
+            37,
+            38,
+            39,
+            40
+        ],
         "is_featured": false,
-        "image_url": "https://images.unsplash.com/photo-1575549897834-49bbca7a7b60?w=800&q=80",
+        "image_url": "nike-court-vision-low",
         "description": "Retro basketball-inspired low-top with classic cupsole."
     },
     {
@@ -175,9 +257,16 @@
         "category": "mens",
         "price": 10999,
         "stock": 21,
-        "sizes": [40, 41, 42, 43, 44, 45],
+        "sizes": [
+            40,
+            41,
+            42,
+            43,
+            44,
+            45
+        ],
         "is_featured": false,
-        "image_url": "https://images.unsplash.com/photo-1600185365926-3a8ce9cbad2a?w=800&q=80",
+        "image_url": "nike-air-force-1",
         "description": "The basketball original with Nike Air cushioning in the heel."
     },
     {
@@ -190,9 +279,18 @@
         "category": "kids",
         "price": 5999,
         "stock": 14,
-        "sizes": [28, 29, 30, 31, 32, 33, 34, 35],
+        "sizes": [
+            28,
+            29,
+            30,
+            31,
+            32,
+            33,
+            34,
+            35
+        ],
         "is_featured": false,
-        "image_url": "https://images.unsplash.com/photo-1514986888952-8c3203310bf4?w=800&q=80",
+        "image_url": "adidas-superstar",
         "description": "Shell-toe classic scaled for kids with easy hook-and-loop strap."
     },
     {
@@ -205,9 +303,17 @@
         "category": "kids",
         "price": 4499,
         "stock": 18,
-        "sizes": [28, 29, 30, 31, 32, 33, 34],
+        "sizes": [
+            28,
+            29,
+            30,
+            31,
+            32,
+            33,
+            34
+        ],
         "is_featured": false,
-        "image_url": "https://images.unsplash.com/photo-1519741497674-611481863552?w=800&q=80",
+        "image_url": "nike-kids-revolution",
         "description": "Flexible, breathable running shoe built for active kids."
     },
     {
@@ -220,9 +326,15 @@
         "category": "mens",
         "price": 8999,
         "stock": 17,
-        "sizes": [40, 41, 42, 43, 44],
+        "sizes": [
+            40,
+            41,
+            42,
+            43,
+            44
+        ],
         "is_featured": false,
-        "image_url": "https://images.unsplash.com/photo-1552346154-21d32810aba3?w=800&q=80",
+        "image_url": "reebok-classic-leather",
         "description": "Soft garment leather upper with die-cut EVA midsole."
     },
     {
@@ -235,9 +347,16 @@
         "category": "running",
         "price": 15999,
         "stock": 11,
-        "sizes": [37, 38, 39, 40, 41, 42],
+        "sizes": [
+            37,
+            38,
+            39,
+            40,
+            41,
+            42
+        ],
         "is_featured": false,
-        "image_url": "https://images.unsplash.com/photo-1551107696-a4b0c5a0d9a2?w=800&q=80",
+        "image_url": "asics-gel-nimbus-25",
         "description": "Maximum cushioning with FF BLAST PLUS ECO foam and GEL technology."
     },
     {
@@ -251,9 +370,17 @@
         "price": 7499,
         "compare_at_price": 8999,
         "stock": 23,
-        "sizes": [38, 39, 40, 41, 42, 43, 44],
+        "sizes": [
+            38,
+            39,
+            40,
+            41,
+            42,
+            43,
+            44
+        ],
         "is_featured": false,
-        "image_url": "https://images.unsplash.com/photo-1463100099107-aa0980c362e6?w=800&q=80",
+        "image_url": "vans-old-skool",
         "description": "Original sidestripe skate shoe with durable canvas and suede upper."
     },
     {
@@ -266,10 +393,16 @@
         "category": "boots",
         "price": 12999,
         "stock": 10,
-        "sizes": [41, 42, 43, 44, 45],
+        "sizes": [
+            41,
+            42,
+            43,
+            44,
+            45
+        ],
         "is_featured": false,
-        "image_url": "https://images.unsplash.com/photo-1638247025967-b4e38f787b76?w=800&q=80",
-        "description": "Suede chukka boot with crepe sole — a timeless casual staple."
+        "image_url": "clarks-desert-boot",
+        "description": "Suede chukka boot with crepe sole \u2014 a timeless casual staple."
     },
     {
         "slug": "teva-universal-trail",
@@ -281,9 +414,16 @@
         "category": "sandals",
         "price": 6999,
         "stock": 13,
-        "sizes": [36, 37, 38, 39, 40, 41],
+        "sizes": [
+            36,
+            37,
+            38,
+            39,
+            40,
+            41
+        ],
         "is_featured": false,
-        "image_url": "https://images.unsplash.com/photo-1562273138-f46be4ebdf33?w=800&q=80",
+        "image_url": "teva-universal-trail",
         "description": "Adjustable straps and rugged outsole for trail and water adventures."
     },
     {
@@ -296,9 +436,16 @@
         "category": "running",
         "price": 13999,
         "stock": 9,
-        "sizes": [41, 42, 43, 44, 45, 46],
+        "sizes": [
+            41,
+            42,
+            43,
+            44,
+            45,
+            46
+        ],
         "is_featured": false,
-        "image_url": "https://images.unsplash.com/photo-1539185441755-769473a23569?w=800&q=80",
+        "image_url": "new-balance-fresh-foam-x",
         "description": "Balanced cushioning for daily training with Fresh Foam X midsole."
     },
     {
@@ -311,9 +458,16 @@
         "category": "womens",
         "price": 5499,
         "stock": 26,
-        "sizes": [36, 37, 38, 39, 40, 41],
+        "sizes": [
+            36,
+            37,
+            38,
+            39,
+            40,
+            41
+        ],
         "is_featured": false,
-        "image_url": "https://images.unsplash.com/photo-1460353581641-37baddab0fa2?w=800&q=80",
+        "image_url": "skechers-go-walk-joy",
         "description": "Ultra-light slip-on walking shoe with responsive cushioning."
     }
 ]

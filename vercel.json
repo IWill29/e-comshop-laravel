@@ -50,6 +50,7 @@
         "REDIS_CACHE_DB": "0",
         "REDIS_CLIENT": "predis",
         "SESSION_DRIVER": "redis",
-        "VIEW_COMPILED_PATH": "/tmp"
+        "VIEW_COMPILED_PATH": "/tmp",
+        "CLOUDINARY_CLOUD_NAME": "rnihysop"
     }
 }

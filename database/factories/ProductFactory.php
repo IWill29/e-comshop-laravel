@@ -24,10 +24,12 @@ class ProductFactory extends Factory
         $name = fake()->words(3, true);
         $price = fake()->numberBetween(4999, 24999);
 
+        $slug = Str::slug($name.'-'.fake()->unique()->numerify('###'));
+
         return [
             'category_id' => Category::factory(),
             'name' => ucwords($name),
-            'slug' => Str::slug($name.'-'.fake()->unique()->numerify('###')),
+            'slug' => $slug,
             'sku' => strtoupper(fake()->unique()->bothify('PX-####-??')),
             'description' => fake()->paragraph(),
             'brand' => fake()->randomElement(['Nike', 'Adidas', 'New Balance', 'Puma', 'Reebok', 'Converse']),
@@ -37,12 +39,7 @@ class ProductFactory extends Factory
             'price' => $price,
             'compare_at_price' => fake()->boolean(20) ? $price + fake()->numberBetween(1000, 5000) : null,
             'stock' => fake()->numberBetween(5, 50),
-            'image_url' => 'https://images.unsplash.com/photo-'.fake()->randomElement([
-                '1542291026-7eec264c27ff',
-                '1606107557195-0be29b4b5b0b',
-                '1608231388042-1630b4e282a9',
-                '1595950653106-6c9ebd614d3a',
-            ]).'?w=800&q=80',
+            'image_url' => $slug,
             'is_active' => true,
             'is_featured' => fake()->boolean(25),
         ];

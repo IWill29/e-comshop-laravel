@@ -32,9 +32,13 @@ COPY --from=composer:2 --chmod=755 /usr/bin/composer /usr/bin/composer
 WORKDIR /var/www/html
 
 COPY docker/php/conf.d/opcache.ini /usr/local/etc/php/conf.d/opcache.ini
+COPY docker/php/conf.d/realpath.ini /usr/local/etc/php/conf.d/realpath.ini
+COPY docker/php/www.conf /usr/local/etc/php-fpm.d/zz-docker-custom.conf
 
 COPY --chmod=755 docker/php/entrypoint.sh /usr/local/bin/entrypoint.sh
 
+# php-fpm workers already use www-data (see www.conf); run the master process
+# as www-data too so the container does not require root at runtime.
 USER www-data
 
 ENTRYPOINT ["entrypoint.sh"]
