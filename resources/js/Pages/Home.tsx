@@ -7,12 +7,14 @@ import { HomePageProps } from '@/types/shop';
 import { PageProps } from '@/types';
 import { Head, Link, WhenVisible } from '@inertiajs/react';
 
-function ProductGridSkeleton({ count = 4 }: { count?: number }) {
+const SKELETON_KEYS = ['sk-a', 'sk-b', 'sk-c', 'sk-d', 'sk-e', 'sk-f', 'sk-g', 'sk-h'] as const;
+
+function ProductGridSkeleton({ count = 4 }: Readonly<{ count?: number }>) {
     return (
         <div className="mt-8 grid grid-cols-2 gap-3 min-[480px]:gap-4 sm:mt-10 sm:gap-5 md:grid-cols-3 md:gap-6 lg:grid-cols-4">
-            {Array.from({ length: count }).map((_, index) => (
+            {SKELETON_KEYS.slice(0, count).map((key) => (
                 <div
-                    key={index}
+                    key={key}
                     className="animate-pulse overflow-hidden rounded-2xl bg-stone-200/80"
                 >
                     <div className="aspect-[4/5] bg-stone-200" />
@@ -32,7 +34,7 @@ export default function Home({
     featuredProducts,
     newArrivals = [],
     categories,
-}: PageProps<HomePageProps>) {
+}: Readonly<PageProps<HomePageProps>>) {
     return (
         <ShopLayout>
             <Head title="Shoes for every stride" />

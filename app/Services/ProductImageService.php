@@ -26,27 +26,25 @@ class ProductImageService
             return '';
         }
 
-        if (! $this->isEnabled()) {
-            return $source;
+        if ($this->isEnabled()) {
+            $transformationName = config(
+                "cloudinary.transformations.{$size->value}",
+                'ecomshop_card',
+            );
+
+            if (is_string($transformationName) && $transformationName !== '') {
+                $image = $this->buildImage($source);
+
+                $image
+                    ->addTransformation(NamedTransformation::name($transformationName))
+                    ->format(Format::auto())
+                    ->quality(Quality::auto());
+
+                return (string) $image->toUrl();
+            }
         }
 
-        $transformationName = config(
-            "cloudinary.transformations.{$size->value}",
-            'ecomshop_card',
-        );
-
-        if (! is_string($transformationName) || $transformationName === '') {
-            return $source;
-        }
-
-        $image = $this->buildImage($source);
-
-        $image
-            ->addTransformation(NamedTransformation::name($transformationName))
-            ->format(Format::auto())
-            ->quality(Quality::auto());
-
-        return (string) $image->toUrl();
+        return $source;
     }
 
     private function buildImage(string $source): Image
@@ -94,11 +92,7 @@ class ProductImageService
 
         $url = config('cloudinary.url');
 
-        if (! is_string($url) || $url === '') {
-            return null;
-        }
-
-        if (preg_match('#@([^/?]+)#', $url, $matches) === 1) {
+        if (is_string($url) && $url !== '' && preg_match('#@([^/?]+)#', $url, $matches) === 1) {
             return $matches[1];
         }
 
@@ -119,18 +113,14 @@ class ProductImageService
     {
         $path = parse_url($cloudinaryUrl, PHP_URL_PATH);
 
-        if (! is_string($path)) {
-            return $cloudinaryUrl;
-        }
+        if (is_string($path)) {
+            if (preg_match('#/image/upload/(?:[^/]+/)*v\d+/(.+)$#', $path, $matches) === 1) {
+                return pathinfo($matches[1], PATHINFO_FILENAME);
+            }
 
-        if (preg_match('#/image/upload/(?:[^/]+/)*v\d+/(.+)$#', $path, $matches) === 1) {
-            return pathinfo($matches[1], PATHINFO_FILENAME);
-        }
-
-        if (preg_match('#/image/upload/(.+)$#', $path, $matches) === 1) {
-            $lastSegment = basename($matches[1]);
-
-            return pathinfo($lastSegment, PATHINFO_FILENAME);
+            if (preg_match('#/image/upload/(.+)$#', $path, $matches) === 1) {
+                return pathinfo(basename($matches[1]), PATHINFO_FILENAME);
+            }
         }
 
         return $cloudinaryUrl;

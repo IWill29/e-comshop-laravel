@@ -10,9 +10,24 @@ use Tests\TestCase;
 
 class ProductImageServiceTest extends TestCase
 {
+    private const DEMO_CLOUD_NAME = 'demo';
+
+    private const DEMO_UPLOAD_CDN_PREFIX = 'res.cloudinary.com/demo/image/upload/';
+
+    /**
+     * @param  array<string, mixed>  $extra
+     */
+    private function configureDemoCloudinary(array $extra = []): void
+    {
+        config(array_merge([
+            'cloudinary.cloud_name' => self::DEMO_CLOUD_NAME,
+            'cloudinary.url' => null,
+        ], $extra));
+    }
+
     public function test_returns_original_url_when_cloudinary_is_not_configured(): void
     {
-        config(['cloudinary.url' => null]);
+        config(['cloudinary.url' => null, 'cloudinary.cloud_name' => null]);
 
         $service = new ProductImageService;
         $source = 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=800';
@@ -23,7 +38,7 @@ class ProductImageServiceTest extends TestCase
 
     public function test_returns_empty_string_for_empty_source(): void
     {
-        config(['cloudinary.url' => 'cloudinary://key:secret@demo']);
+        $this->configureDemoCloudinary();
 
         $service = new ProductImageService;
 
@@ -33,8 +48,7 @@ class ProductImageServiceTest extends TestCase
 
     public function test_builds_fetch_cdn_url_for_external_images(): void
     {
-        config([
-            'cloudinary.url' => 'cloudinary://key:secret@demo',
+        $this->configureDemoCloudinary([
             'cloudinary.transformations.card' => 'ecomshop_card',
         ]);
 
@@ -51,9 +65,7 @@ class ProductImageServiceTest extends TestCase
 
     public function test_builds_upload_cdn_url_for_cloudinary_public_id(): void
     {
-        config([
-            'cloudinary.cloud_name' => 'demo',
-            'cloudinary.url' => null,
+        $this->configureDemoCloudinary([
             'cloudinary.transformations.detail' => 'ecomshop_detail',
         ]);
 
@@ -61,16 +73,14 @@ class ProductImageServiceTest extends TestCase
 
         $url = $service->url('nike-air-max-90', ProductImageSize::Detail);
 
-        $this->assertStringContainsString('res.cloudinary.com/demo/image/upload/', $url);
+        $this->assertStringContainsString(self::DEMO_UPLOAD_CDN_PREFIX, $url);
         $this->assertStringContainsString('t_ecomshop_detail', $url);
         $this->assertStringContainsString('nike-air-max-90', $url);
     }
 
     public function test_builds_hero_cdn_url_for_home_featured_image(): void
     {
-        config([
-            'cloudinary.cloud_name' => 'demo',
-            'cloudinary.url' => null,
+        $this->configureDemoCloudinary([
             'cloudinary.transformations.hero' => 'ecomshop_hero',
         ]);
 
@@ -78,15 +88,14 @@ class ProductImageServiceTest extends TestCase
 
         $url = $service->url('nike-air-max-90', ProductImageSize::Hero);
 
-        $this->assertStringContainsString('res.cloudinary.com/demo/image/upload/', $url);
+        $this->assertStringContainsString(self::DEMO_UPLOAD_CDN_PREFIX, $url);
         $this->assertStringContainsString('t_ecomshop_hero', $url);
         $this->assertStringContainsString('nike-air-max-90', $url);
     }
 
     public function test_extracts_public_id_from_cloudinary_secure_url(): void
     {
-        config([
-            'cloudinary.url' => 'cloudinary://key:secret@demo',
+        $this->configureDemoCloudinary([
             'cloudinary.transformations.card' => 'ecomshop_card',
         ]);
 
@@ -95,7 +104,7 @@ class ProductImageServiceTest extends TestCase
 
         $url = $service->url($source, ProductImageSize::Card);
 
-        $this->assertStringContainsString('res.cloudinary.com/demo/image/upload/', $url);
+        $this->assertStringContainsString(self::DEMO_UPLOAD_CDN_PREFIX, $url);
         $this->assertStringContainsString('nike-air-max-90', $url);
         $this->assertStringNotContainsString('v1783421979', $url);
     }
