@@ -37,5 +37,9 @@ COPY docker/php/www.conf /usr/local/etc/php-fpm.d/zz-docker-custom.conf
 
 COPY --chmod=755 docker/php/entrypoint.sh /usr/local/bin/entrypoint.sh
 
+# php-fpm workers already use www-data (see www.conf); run the master process
+# as www-data too so the container does not require root at runtime.
+USER www-data
+
 ENTRYPOINT ["entrypoint.sh"]
 CMD ["php-fpm", "-F"]
