@@ -10,14 +10,14 @@ E-commerce demo for **paradit-x.com** — Laravel 13, Inertia + React, Stripe, V
 
 Single source of truth for project completion. Legend: `[x]` done · `[~]` partial · `[ ]` not started.
 
-**Overall:** ~85% complete (Phase 0 done; Phase 1 code complete — Stripe Dashboard webhook URL pending; Phase 2 in progress — account, profile UI, search fix done)
+**Overall:** ~86% complete (Phase 0 done; Phase 1 code complete — Stripe Dashboard webhook URL pending; Phase 2 in progress — Redis live on Vercel)
 
 
 | Phase                                                            | Progress | Status      |
 | ---------------------------------------------------------------- | -------- | ----------- |
 | **Phase 0** — Foundation (Laravel, Inertia, auth, Vercel config) | 22 / 22  | **Done**    |
 | **Phase 1** — MVP demo (DB, shop UI, Stripe)                     | 14 / 14  | **Done**    |
-| **Phase 2** — Polish (Redis, CDN, queue, tests)                  | 4 / 12   | In progress |
+| **Phase 2** — Polish (Redis, CDN, queue, tests)                  | 5 / 12   | In progress |
 | **Phase 3** — Showcase (premium UI, CI/CD, domain)               | 0 / 6    | Not started |
 
 
@@ -69,9 +69,9 @@ Single source of truth for project completion. Legend: `[x]` done · `[~]` parti
 - [x] Trust proxies (`bootstrap/app.php`)
 - [x] Health check route `/up`
 - [x] `LOG_CHANNEL=stderr` in Vercel env
-- [x] `composer run vercel` deploy script (migrate + optimize only — **no** `npm run build` on Vercel)
-- [x] `.env.example` documented (PostgreSQL, Redis, Stripe placeholders)
-- [~] Production env vars set in Vercel Dashboard (Neon `DB_URL`, Stripe keys — verify webhook URL in Stripe Dashboard)
+- [x] `composer run vercel` deploy script (migrate + route/view cache — **no** `config:cache`, **no** `npm run build` on Vercel)
+- [x] `.env.example` documented (PostgreSQL, Upstash Redis, Stripe placeholders)
+- [~] Production env vars set in Vercel Dashboard (Neon `DB_URL`, Upstash `REDIS_URL`, Stripe keys — verify webhook URL in Stripe Dashboard)
 
 ---
 
@@ -86,7 +86,7 @@ Single source of truth for project completion. Legend: `[x]` done · `[~]` parti
 - [x] Seeders (~20 demo shoes, 8 categories) — JSON in `database/data/`
 - [x] Factories for products/orders
 - [x] `OrderStatus` / `PaymentStatus` enums
-- [x] `CartService` (session)
+- [x] `CartService` (session; Redis-backed on Vercel via `SESSION_DRIVER=redis`)
 - [x] Actions: `ListProductsAction` ✓, `SearchProductSuggestionsAction` ✓, `CreateCheckoutSessionAction` ✓, `AddToCartAction` ✓
 - [x] DTOs: `CatalogFiltersData` ✓, `CheckoutData`, `CartItemData` ✓; frontend checkout types in `shop.d.ts` ✓
 
@@ -115,7 +115,7 @@ Single source of truth for project completion. Legend: `[x]` done · `[~]` parti
 
 ### Phase 2 — Professional polish
 
-- [ ] Upstash Redis (sessions, cache, cart on Vercel)
+- [x] Upstash Redis (sessions, cache, cart on Vercel — `ecomshop-redis`, predis, `ShopCacheService`)
 - [ ] Cloudinary / S3 + CDN for product images
 - [ ] External queue worker (Railway / Fly.io)
 - [ ] Order confirmation email (queued)
@@ -144,6 +144,7 @@ Single source of truth for project completion. Legend: `[x]` done · `[~]` parti
 ### Backend architecture (Laravel Way)
 
 - [~] Thin controllers (`HomeController`, `ShopController`, `ProductController`, `CheckoutController`, `CartController`, `Account\OrderController`, `StripeWebhookController` + auth)
+- [~] Services (`CartService` ✓, `ShopCacheService` ✓)
 - [~] Form Requests (auth/profile + `StoreCheckoutRequest` ✓)
 - [x] Enums for order/payment status
 - [x] DTOs for checkout/cart/Stripe (`CheckoutData`, `CartItemData`, `CatalogFiltersData` + `shop.d.ts` ✓)
@@ -184,13 +185,13 @@ Single source of truth for project completion. Legend: `[x]` done · `[~]` parti
 
 | Ready                                 | Missing                                |
 | ------------------------------------- | -------------------------------------- |
-| Laravel 13 + Breeze + Inertia + React | Redis, CDN, queue worker               |
-| Auth UI + tests (26 passing)          | Custom domain `paradit-x.com`          |
-| Premium auth UI (Login/Register) + customer redirect to home | CI/CD pipeline (GitHub Actions) |
-| Vercel live (`e-comportf-project.vercel.app`) + committed `public/build` | Order confirmation email      |
-| E-commerce domain (models, migrations, JSON seeders) | Stripe webhook URL in Dashboard for prod |
-| Home + Shop + Product + Cart + Checkout (full flow) | About / Contact / Shipping / Legal pages |
-| Stripe Checkout + webhooks (test mode, code complete) | Rate limiting on checkout/webhook, Sentry |
+| Laravel 13 + Breeze + Inertia + React | CDN, queue worker               |
+| **Upstash Redis** (sessions, cache, cart on Vercel) | Custom domain `paradit-x.com`          |
+| Auth UI + tests (26 passing)          | CI/CD pipeline (GitHub Actions) |
+| Premium auth UI (Login/Register) + customer redirect to home | Order confirmation email      |
+| Vercel live (`e-comportf-project.vercel.app`) + committed `public/build` | Stripe webhook URL in Dashboard for prod |
+| E-commerce domain (models, migrations, JSON seeders) | About / Contact / Shipping / Legal pages |
+| Home + Shop + Product + Cart + Checkout (full flow) | Rate limiting on checkout/webhook, Sentry |
 | `ShopLayout` + shop components + `UserMenu` (account dropdown) | Admin dashboard (future) |
 | **My orders** + order detail + **Profile settings** (`ShopLayout`) | Forgot/Reset password premium UI |
 | **Search** with autocomplete + PostgreSQL `ILIKE` fix | 404 page, Size guide |
@@ -208,12 +209,12 @@ Single source of truth for project completion. Legend: `[x]` done · `[~]` parti
 | --- | ----------------------- | ------------------------------------- | ------------------------------ | -------------------------------- |
 | 1.1 | **Hosting**             | Vercel (web) + external services      | Serverless, fast demo          | **Done**                         |
 | 1.2 | **Database**            | PostgreSQL (Neon / Supabase)          | SQLite does not work on Vercel | **Done** (Neon live)             |
-| 1.3 | **Redis**               | Upstash Redis                         | Sessions, cache, cart          | **Required** (Docker local only) |
+| 1.3 | **Redis**               | Upstash Redis                         | Sessions, cache, cart          | **Done** (predis + `ShopCacheService`; `REDIS_URL` live on Vercel) |
 | 1.4 | **File storage**        | Cloudinary / S3 + CDN                 | No persistent disk on Vercel   | **Required**                     |
 | 1.5 | **Queue workers**       | Railway / Fly.io / Upstash QStash     | Stripe webhook, emails         | **Required**                     |
 | 1.6 | **Cron / scheduler**    | Vercel Cron Pro or external scheduler | Order cleanup, etc.            | Later                            |
 | 1.7 | **Custom domain + SSL** | `paradit-x.com` → Vercel              | Professional demo              | **Required**                     |
-| 1.8 | **Env management**      | Vercel Dashboard secrets              | Security                       | **Partial** (Neon + Stripe; verify webhook URL) |
+| 1.8 | **Env management**      | Vercel Dashboard secrets              | Security                       | **Partial** (Neon + Upstash Redis + Stripe; verify webhook URL) |
 | 1.9 | **Local dev stack**     | Docker Compose (PG + Redis)           | Match production locally       | **Done**                         |
 
 
@@ -224,7 +225,7 @@ Single source of truth for project completion. Legend: `[x]` done · `[~]` parti
 ```
 app/
 ├── Actions/          ← One business operation = one class
-├── Services/         ← CartService, PricingService
+├── Services/         ← CartService, ShopCacheService
 ├── DTOs/             ← CheckoutData, CartItemData
 ├── Enums/            ← OrderStatus, PaymentStatus
 ├── Events/           ← OrderPaid, CartUpdated
@@ -438,7 +439,7 @@ Verify with `php artisan route:list`.
 | `composer run dev`    | PHP server + queue + logs + Vite HMR       |
 | `npm run dev`         | Vite only                                  |
 | `npm run build`       | `tsc && vite build` → `public/build/`      |
-| `composer run vercel` | migrate + optimize on Vercel (assets must be pre-built and committed) |
+| `composer run vercel` | migrate + route/view cache on Vercel (assets must be pre-built and committed) |
 
 
 Optional SSR (not required for MVP): `php artisan breeze:install react --ssr` then `npm run build:ssr`.
@@ -459,7 +460,7 @@ Optional SSR (not required for MVP): `php artisan breeze:install react --ssr` th
 | 4.7 | **Factories**  | For tests                               | —                            | **Done**                          |
 
 
-**Cart:** session (simple demo) or Redis (more professional, stateless on Vercel).
+**Cart:** session stored in Redis on Vercel (`SESSION_DRIVER=redis` + Upstash `REDIS_URL`); local dev uses database or Docker Redis.
 
 ---
 
@@ -502,7 +503,7 @@ flowchart TD
 | --- | ------------ | ------------------------------------------- | ----------- |
 | 5.1 | Catalog      | Filter, search, pagination                  | **Done** (filters, sort, pagination, search by name/brand/SKU; PostgreSQL `ILIKE`) |
 | 5.2 | Product page | Stock check, quantity limits                | **Done** (size selector, stock display, add to cart) |
-| 5.3 | Cart         | Session/Redis, stock validation at checkout | **Done** (session cart + stock checks; Redis Phase 2) |
+| 5.3 | Cart         | Session/Redis, stock validation at checkout | **Done** (Redis sessions on Vercel via Upstash; `CartService` uses session) |
 | 5.4 | Checkout     | Guest checkout + optional auth              | **Done** (Stripe Checkout + `Inertia::location`) |
 | 5.5 | Orders       | Status enum, idempotency                    | **Done** (enum + webhook idempotency) |
 | 5.6 | Stock        | Reserve at checkout; confirm on webhook; restore on expiry | **Done** |
@@ -554,9 +555,9 @@ flowchart TD
 
 | #   | Optimization              | How                                   | Status                       |
 | --- | ------------------------- | ------------------------------------- | ---------------------------- |
-| 8.1 | **Eager loading**         | `Product::with('category')`           | **Done** (`ListProductsAction`, `HomeController`) |
-| 8.2 | **Cache**                 | Redis — categories, featured products | Not started                  |
-| 8.3 | **Route/config cache**    | `artisan optimize` on deploy          | **Done** (`composer vercel`) |
+| 8.1 | **Eager loading**         | `Product::with('category')`           | **Done** (`ListProductsAction`, `ShopCacheService`) |
+| 8.2 | **Cache**                 | Redis — categories, featured products | **Done** (`ShopCacheService` + Upstash; resilient fallback) |
+| 8.3 | **Route/view cache**      | `route:cache` + `view:cache` on deploy | **Done** (`composer vercel`; no `config:cache` on Vercel) |
 | 8.4 | **Asset bundling**        | Vite production build                 | **Done**                     |
 | 8.5 | **DB connection pooling** | Neon serverless driver                | Not started                  |
 | 8.6 | **Images**                | CDN + WebP, not local on Vercel       | Not started                  |
@@ -608,6 +609,7 @@ flowchart TD
 | Webhook (short request)        | Local file storage                   |
 | Static assets (`public/build` committed in git) | Building assets only on Vercel (`@vercel/static` cannot see `vercel-php` output) |
 | Stateless PHP functions        | SQLite, file sessions at scale; Cron without Vercel Pro |
+| Upstash Redis (sessions + cache) | `config:cache` on Vercel (env baked at build — use runtime config) |
 
 
 ### Recommended hybrid architecture
@@ -648,7 +650,7 @@ Railway/Fly.io  → Queue worker (webhook, emails)
 2. ~~Search / Sale / New arrivals + PostgreSQL `ILIKE` search~~ ✓
 3. ~~My orders + Profile settings (`ShopLayout`)~~ ✓
 4. ~~Premium storefront UI~~ ✓ (Forgot/Reset password UI still Breeze default)
-5. Upstash Redis (sessions/cache on Vercel)
+5. ~~Upstash Redis (sessions/cache on Vercel)~~ ✓ (`ecomshop-redis`, predis, `ShopCacheService`)
 6. Cloudinary / CDN images
 7. Queue worker (Railway / Fly.io)
 8. Order confirmation email
@@ -818,8 +820,8 @@ Footer links to 25–27 on every page (routes not implemented yet).
 
 #### Storefront (MVP)
 
-- [x] Home — hero, 3–4 featured products, category tiles, new arrivals, brand ticker
-- [x] Shop — grid, filters, pagination
+- [x] Home — hero, 3–4 featured products, category tiles, new arrivals, brand ticker (cached via `ShopCacheService`)
+- [x] Shop — grid, filters, pagination (filter options + categories cached)
 - [x] Category — filtered catalog per slug (shared `Shop/Index`)
 - [x] Product detail — size selector, add to cart, gallery (single image)
 - [x] Cart — update qty, remove, proceed to checkout
@@ -948,6 +950,7 @@ Quick verification before production. See **Architecture Progress Checklist** ab
 
 - [x] Controllers are thin; logic lives in Actions/Services (shop + checkout + webhook ✓)
 - [x] Enums + DTOs + Form Requests (`CheckoutData`, `CartItemData`, `StoreCheckoutRequest` ✓)
+- [x] Redis cache layer (`ShopCacheService` — categories, featured, filter options)
 - [~] `declare(strict_types=1)` on all PHP files (e-commerce + shop domain done)
 - [ ] Events/Listeners for order lifecycle
 - [~] Policies for authorization (`OrderPolicy` ✓; `ProductPolicy` pending)
@@ -955,7 +958,7 @@ Quick verification before production. See **Architecture Progress Checklist** ab
 ### Infrastructure
 
 - [x] External DB (Neon PostgreSQL live on Vercel)
-- [ ] Redis for sessions/cache (not file driver) — Docker local ✓
+- [x] Redis for sessions/cache (not file driver) — Docker local ✓; Vercel via Upstash `REDIS_URL` (`ecomshop-redis`)
 - [ ] CDN for images (not `/storage` on Vercel)
 - [ ] Queue worker for webhooks and emails
 - [x] Secrets only in env, never in git
@@ -996,12 +999,13 @@ Before first production deploy:
 - [~] `APP_KEY` set in Vercel Dashboard
 - [~] `APP_URL` matches deployment URL (e.g. `https://e-comportf-project.vercel.app`)
 - [x] PostgreSQL credentials configured (Neon `DB_URL`)
+- [x] `REDIS_URL` configured (Upstash `ecomshop-redis` → `rediss://...`, production + preview)
 - [ ] `VERCEL_FORCE_NO_BUILD_CACHE=1` (only if deploy fails after composer update)
 - [~] Stripe test keys + `STRIPE_WEBHOOK_SECRET` in Vercel env
 - [ ] Stripe webhook URL registered: `https://<domain>/stripe/webhook` (Dashboard → Webhooks)
 - [x] `public/build` committed to repository (**do not** run `npm run build` in `composer vercel`)
 - [x] `vercel.json` + `api/index.php` configured
-- [x] `composer vercel` build script (migrate + optimize only)
+- [x] `composer vercel` build script (migrate + route/view cache only; no `config:cache`)
 - [x] Vite `emptyOutDir: true` — run `npm run build` locally before commit when frontend changes
 
 ### Asset deploy rules (learned from production)
@@ -1013,4 +1017,4 @@ Before first production deploy:
 
 ---
 
-*Last updated: July 2026 — Profile settings on `ShopLayout`; PostgreSQL search `ILIKE` fix; 56 PHPUnit tests passing; Phase 2 progress reconciled*
+*Last updated: July 2026 — Upstash Redis live (`ecomshop-redis`, predis, sessions/cache/cart); `ShopCacheService` + resilient cache fallback; 56 tests passing*
