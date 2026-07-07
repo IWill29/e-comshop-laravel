@@ -41,15 +41,15 @@
     "env": {
         "APP_ENV": "production",
         "APP_DEBUG": "false",
-        "APP_CONFIG_CACHE": "/tmp/config.php",
-        "APP_EVENTS_CACHE": "/tmp/events.php",
         "APP_PACKAGES_CACHE": "/tmp/packages.php",
         "APP_ROUTES_CACHE": "/tmp/routes.php",
         "APP_SERVICES_CACHE": "/tmp/services.php",
-        "CACHE_DRIVER": "array",
-        "CACHE_STORE": "array",
+        "CACHE_STORE": "redis",
         "LOG_CHANNEL": "stderr",
-        "SESSION_DRIVER": "cookie",
+        "REDIS_CACHE_CONNECTION": "default",
+        "REDIS_CACHE_DB": "0",
+        "REDIS_CLIENT": "predis",
+        "SESSION_DRIVER": "redis",
         "VIEW_COMPILED_PATH": "/tmp"
     }
 }
