@@ -4,8 +4,8 @@ namespace App\Providers;
 
 use App\Database\NeonPostgresConnector;
 use App\Database\RedisAvailability;
+use App\Services\ProductImageService;
 use Illuminate\Http\Resources\Json\JsonResource;
-use Illuminate\Support\Facades\Vite;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -16,6 +16,7 @@ class AppServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->bind('db.connector.pgsql', NeonPostgresConnector::class);
+        $this->app->singleton(ProductImageService::class);
     }
 
     /**
@@ -26,7 +27,5 @@ class AppServiceProvider extends ServiceProvider
         RedisAvailability::applyRuntimeFallback();
 
         JsonResource::withoutWrapping();
-
-        Vite::prefetch(concurrency: 3);
     }
 }

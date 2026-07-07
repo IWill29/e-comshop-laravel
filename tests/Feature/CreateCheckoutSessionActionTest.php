@@ -9,6 +9,7 @@ use App\DTOs\CheckoutData;
 use App\Models\Order;
 use App\Models\Product;
 use App\Services\CartService;
+use App\Services\ProductImageService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Mockery;
 use RuntimeException;
@@ -43,7 +44,7 @@ class CreateCheckoutSessionActionTest extends TestCase
             'url' => 'https://checkout.stripe.com/c/pay/cs_test_session',
         ]);
 
-        $action = Mockery::mock(CreateCheckoutSessionAction::class, [$cart])->makePartial();
+        $action = Mockery::mock(CreateCheckoutSessionAction::class, [$cart, app(ProductImageService::class)])->makePartial();
         $action->shouldAllowMockingProtectedMethods();
         $action->shouldReceive('createStripeCheckoutSession')
             ->once()
@@ -74,7 +75,7 @@ class CreateCheckoutSessionActionTest extends TestCase
         $cart = app(CartService::class);
         $cart->add($product, 42, 2);
 
-        $action = Mockery::mock(CreateCheckoutSessionAction::class, [$cart])->makePartial();
+        $action = Mockery::mock(CreateCheckoutSessionAction::class, [$cart, app(ProductImageService::class)])->makePartial();
         $action->shouldAllowMockingProtectedMethods();
         $action->shouldReceive('createStripeCheckoutSession')
             ->once()

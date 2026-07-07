@@ -111,10 +111,20 @@ export type CartIndexPageProps = {
     itemCount: number;
 };
 
+export interface HeroProduct {
+    name: string;
+    slug: string;
+    brand: string;
+    imageUrl: string;
+}
+
 export type HomePageProps = {
+    heroImageUrl: string | null;
+    heroProductName: string | null;
+    heroProduct: HeroProduct | null;
     featuredProducts: Product[];
-    newArrivals: Product[];
     categories: Category[];
+    newArrivals?: Product[];
 };
 
 export interface CartLineItem {

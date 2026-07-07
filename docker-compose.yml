@@ -8,23 +8,30 @@ services:
     working_dir: /var/www/html
     volumes:
       - .:/var/www/html
-      # Keep Linux-native deps inside the container (avoid Windows host node_modules).
+      # Linux-native deps — avoids slow Windows host vendor/ node_modules I/O.
+      - vendor-data:/var/www/html/vendor
       - node_modules:/var/www/html/node_modules
     env_file:
       - .env.docker
     environment:
       APP_ENV: local
       APP_DEBUG: "true"
+      APP_KEY: ${APP_KEY}
       APP_URL: http://localhost:8080
       DB_CONNECTION: pgsql
+      DB_URL: ""
       DB_HOST: pgsql
       DB_PORT: 5432
+      DB_DATABASE: ecomshop
+      DB_USERNAME: ecomshop
+      DB_PASSWORD: ${DB_PASSWORD:-localdev_secret}
       REDIS_CLIENT: phpredis
       REDIS_HOST: redis
       REDIS_PORT: 6379
       CACHE_STORE: redis
       SESSION_DRIVER: redis
       QUEUE_CONNECTION: redis
+      CLOUDINARY_CLOUD_NAME: rnihysop
     depends_on:
       pgsql:
         condition: service_healthy
@@ -84,3 +91,4 @@ networks:
 volumes:
   pgsql-data:
   node_modules:
+  vendor-data:

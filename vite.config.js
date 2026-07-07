@@ -5,6 +5,22 @@ import react from '@vitejs/plugin-react';
 export default defineConfig({
     build: {
         emptyOutDir: true,
+        rollupOptions: {
+            output: {
+                manualChunks(id) {
+                    if (
+                        id.includes('node_modules/react-dom')
+                        || id.includes('node_modules/react/')
+                    ) {
+                        return 'react-vendor';
+                    }
+
+                    if (id.includes('node_modules/@inertiajs')) {
+                        return 'inertia-vendor';
+                    }
+                },
+            },
+        },
     },
     plugins: [
         laravel({

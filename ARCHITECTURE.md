@@ -17,7 +17,7 @@ Single source of truth for project completion. Legend: `[x]` done · `[~]` parti
 | ---------------------------------------------------------------- | -------- | ----------- |
 | **Phase 0** — Foundation (Laravel, Inertia, auth, Vercel config) | 22 / 22  | **Done**    |
 | **Phase 1** — MVP demo (DB, shop UI, Stripe)                     | 14 / 14  | **Done**    |
-| **Phase 2** — Polish (Redis, CDN, queue, tests)                  | 5 / 12   | In progress |
+| **Phase 2** — Polish (Redis, CDN, queue, tests)                  | 6 / 12   | In progress |
 | **Phase 3** — Showcase (premium UI, CI/CD, domain)               | 0 / 6    | Not started |
 
 
@@ -116,7 +116,7 @@ Single source of truth for project completion. Legend: `[x]` done · `[~]` parti
 ### Phase 2 — Professional polish
 
 - [x] Upstash Redis (sessions, cache, cart on Vercel — `ecomshop-redis`, predis, `ShopCacheService`)
-- [ ] Cloudinary / S3 + CDN for product images
+- [x] Cloudinary / S3 + CDN for product images (`ProductImageService`, named transforms, `products:sync-images`)
 - [ ] External queue worker (Railway / Fly.io)
 - [ ] Order confirmation email (queued)
 - [x] Feature tests: shop (`ShopTest` ×9), cart (`CartTest` ×6, `CartServiceTest` ×2), checkout (`CheckoutTest` ×4, `CreateCheckoutSessionActionTest` ×2), webhook (`StripeWebhookTest` ×4), account (`AccountOrderTest` ×3), auth + profile (26) — **56 tests total**
@@ -185,9 +185,9 @@ Single source of truth for project completion. Legend: `[x]` done · `[~]` parti
 
 | Ready                                 | Missing                                |
 | ------------------------------------- | -------------------------------------- |
-| Laravel 13 + Breeze + Inertia + React | CDN, queue worker               |
+| Laravel 13 + Breeze + Inertia + React | Queue worker, custom domain       |
 | **Upstash Redis** (sessions, cache, cart on Vercel) | Custom domain `paradit-x.com`          |
-| Auth UI + tests (26 passing)          | CI/CD pipeline (GitHub Actions) |
+| **Cloudinary CDN** (product images, WebP, named transforms) | Queue worker               |
 | Premium auth UI (Login/Register) + customer redirect to home | Order confirmation email      |
 | Vercel live (`e-comportf-project.vercel.app`) + committed `public/build` | Stripe webhook URL in Dashboard for prod |
 | E-commerce domain (models, migrations, JSON seeders) | About / Contact / Shipping / Legal pages |
@@ -210,7 +210,7 @@ Single source of truth for project completion. Legend: `[x]` done · `[~]` parti
 | 1.1 | **Hosting**             | Vercel (web) + external services      | Serverless, fast demo          | **Done**                         |
 | 1.2 | **Database**            | PostgreSQL (Neon / Supabase)          | SQLite does not work on Vercel | **Done** (Neon live)             |
 | 1.3 | **Redis**               | Upstash Redis                         | Sessions, cache, cart          | **Done** (predis + `ShopCacheService`; `REDIS_URL` live on Vercel) |
-| 1.4 | **File storage**        | Cloudinary / S3 + CDN                 | No persistent disk on Vercel   | **Required**                     |
+| 1.4 | **File storage**        | Cloudinary / S3 + CDN                 | No persistent disk on Vercel   | **Done** (`ProductImageService`, Cloudinary MCP transforms) |
 | 1.5 | **Queue workers**       | Railway / Fly.io / Upstash QStash     | Stripe webhook, emails         | **Required**                     |
 | 1.6 | **Cron / scheduler**    | Vercel Cron Pro or external scheduler | Order cleanup, etc.            | Later                            |
 | 1.7 | **Custom domain + SSL** | `paradit-x.com` → Vercel              | Professional demo              | **Required**                     |
@@ -560,7 +560,7 @@ flowchart TD
 | 8.3 | **Route/view cache**      | `route:cache` + `view:cache` on deploy | **Done** (`composer vercel`; no `config:cache` on Vercel) |
 | 8.4 | **Asset bundling**        | Vite production build                 | **Done**                     |
 | 8.5 | **DB connection pooling** | Neon serverless driver                | Not started                  |
-| 8.6 | **Images**                | CDN + WebP, not local on Vercel       | Not started                  |
+| 8.6 | **Images**                | CDN + WebP, not local on Vercel       | **Done** (`ProductImageService` + `f_auto/q_auto`)       |
 | 8.7 | **Pagination**            | Not `Product::all()`                  | **Done** (12 per page)       |
 
 
@@ -651,7 +651,7 @@ Railway/Fly.io  → Queue worker (webhook, emails)
 3. ~~My orders + Profile settings (`ShopLayout`)~~ ✓
 4. ~~Premium storefront UI~~ ✓ (Forgot/Reset password UI still Breeze default)
 5. ~~Upstash Redis (sessions/cache on Vercel)~~ ✓ (`ecomshop-redis`, predis, `ShopCacheService`)
-6. Cloudinary / CDN images
+6. ~~Cloudinary / CDN images~~ ✓ (`ProductImageService`, MCP named transforms, `products:sync-images`)
 7. Queue worker (Railway / Fly.io)
 8. Order confirmation email
 9. Rate limiting (checkout + webhook)
