@@ -26,3 +26,6 @@ Thumbs.db
 
 .vercel
 ARCHITECTURE.md
+
+.vercel
+.env*

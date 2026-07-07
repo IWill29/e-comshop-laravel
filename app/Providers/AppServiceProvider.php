@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Database\NeonPostgresConnector;
+use App\Database\RedisAvailability;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Vite;
 use Illuminate\Support\ServiceProvider;
@@ -22,6 +23,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        RedisAvailability::applyRuntimeFallback();
+
         JsonResource::withoutWrapping();
 
         Vite::prefetch(concurrency: 3);

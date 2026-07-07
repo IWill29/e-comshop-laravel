@@ -11,6 +11,7 @@
         "laravel/framework": "^13.0",
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^3.0",
+        "predis/predis": "^3.5",
         "stripe/stripe-php": "^20.3",
         "tightenco/ziggy": "^2.0"
     },
@@ -67,7 +68,8 @@
         "vercel": [
             "@php artisan package:discover --ansi",
             "@php artisan migrate --force",
-            "@php artisan optimize"
+            "@php artisan route:cache",
+            "@php artisan view:cache"
         ],
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",

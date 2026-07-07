@@ -6,38 +6,18 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\CategoryResource;
 use App\Http\Resources\ProductResource;
-use App\Models\Category;
-use App\Models\Product;
+use App\Services\ShopCacheService;
 use Inertia\Inertia;
 use Inertia\Response;
 
 class HomeController extends Controller
 {
-    public function __invoke(): Response
+    public function __invoke(ShopCacheService $cache): Response
     {
-        $featuredProducts = Product::query()
-            ->with('category')
-            ->where('is_active', true)
-            ->where('is_featured', true)
-            ->limit(4)
-            ->get();
-
-        $newArrivals = Product::query()
-            ->with('category')
-            ->where('is_active', true)
-            ->latest()
-            ->limit(8)
-            ->get();
-
-        $categories = Category::query()
-            ->withCount(['products' => fn ($query) => $query->where('is_active', true)])
-            ->orderBy('name')
-            ->get();
-
         return Inertia::render('Home', [
-            'featuredProducts' => ProductResource::collection($featuredProducts),
-            'newArrivals' => ProductResource::collection($newArrivals),
-            'categories' => CategoryResource::collection($categories),
+            'featuredProducts' => ProductResource::collection($cache->homeFeaturedProducts()),
+            'newArrivals' => ProductResource::collection($cache->homeNewArrivals()),
+            'categories' => CategoryResource::collection($cache->categories()),
         ]);
     }
 }
