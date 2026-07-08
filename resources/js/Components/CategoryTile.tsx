@@ -12,7 +12,7 @@ export default function CategoryTile({ category }: Readonly<CategoryTileProps>) 
     return (
         <Link
             href={`/shop/${category.slug}`}
-            className="group relative w-[9.5rem] shrink-0 snap-start rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 xs:w-40 sm:w-48"
+            className="group relative w-[8.75rem] shrink-0 snap-start rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 xs:w-40 sm:w-44 md:w-48"
         >
             <div className="relative aspect-[3/4] overflow-hidden rounded-xl ring-1 ring-black/5 sm:rounded-2xl">
                 <img
