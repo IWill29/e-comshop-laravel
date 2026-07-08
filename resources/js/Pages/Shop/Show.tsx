@@ -12,6 +12,7 @@ export default function ProductShow({ product }: PageProps<ProductShowPageProps>
     const { selectedSize, setSelectedSize, isValid } = useSizeSelection(product.sizes);
     const { errors } = usePage<PageProps & { errors: Partial<Record<'size' | 'quantity', string>> }>().props;
     const [processing, setProcessing] = useState(false);
+    const [justAdded, setJustAdded] = useState(false);
     const price = formatPrice(product.price);
     const compareAtPrice = product.compareAtPrice
         ? formatPrice(product.compareAtPrice)
@@ -25,6 +26,7 @@ export default function ProductShow({ product }: PageProps<ProductShowPageProps>
         }
 
         setProcessing(true);
+        setJustAdded(false);
 
         router.post(
             route('cart.store', product.slug),
@@ -34,6 +36,7 @@ export default function ProductShow({ product }: PageProps<ProductShowPageProps>
             },
             {
                 preserveScroll: true,
+                onSuccess: () => setJustAdded(true),
                 onFinish: () => setProcessing(false),
             },
         );
@@ -129,7 +132,10 @@ export default function ProductShow({ product }: PageProps<ProductShowPageProps>
                             <SizeSelector
                                 sizes={product.sizes}
                                 selectedSize={selectedSize}
-                                onSelect={setSelectedSize}
+                                onSelect={(size) => {
+                                    setSelectedSize(size);
+                                    setJustAdded(false);
+                                }}
                             />
                         </div>
 
@@ -149,6 +155,23 @@ export default function ProductShow({ product }: PageProps<ProductShowPageProps>
                         </button>
 
                         <InputError message={errors?.size ?? errors?.quantity} className="mt-2" />
+
+                        {justAdded && (
+                            <div
+                                className="mt-4 flex flex-col gap-3 rounded-xl border border-emerald-200/80 bg-emerald-50 px-4 py-3 sm:flex-row sm:items-center sm:justify-between"
+                                role="status"
+                            >
+                                <p className="text-sm font-medium text-emerald-900">
+                                    Added to cart — you can keep shopping.
+                                </p>
+                                <Link
+                                    href={route('cart.index')}
+                                    className="inline-flex min-h-9 shrink-0 items-center justify-center rounded-lg bg-emerald-700 px-4 text-sm font-semibold text-white transition hover:bg-emerald-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 focus-visible:ring-offset-2"
+                                >
+                                    View cart
+                                </Link>
+                            </div>
+                        )}
 
                         {!isValid && product.stock > 0 && (
                             <p className="mt-2 text-xs text-stone-500">

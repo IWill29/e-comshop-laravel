@@ -12,7 +12,7 @@ use Throwable;
 
 class ShopCacheService
 {
-    private const KEY_CATEGORIES = 'shop.categories.v2';
+    private const KEY_CATEGORIES = 'shop.categories.v4';
 
     private const KEY_FILTER_OPTIONS = 'shop.filter_options.v2';
 

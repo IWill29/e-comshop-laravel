@@ -27,24 +27,47 @@ class ProductImageService
         }
 
         if ($this->isEnabled()) {
+            if ($size === ProductImageSize::Detail) {
+                return $this->detailUrl($source);
+            }
+
             $transformationName = config(
                 "cloudinary.transformations.{$size->value}",
                 'ecomshop_card',
             );
 
             if (is_string($transformationName) && $transformationName !== '') {
-                $image = $this->buildImage($source);
-
-                $image
-                    ->addTransformation(NamedTransformation::name($transformationName))
-                    ->format(Format::auto())
-                    ->quality(Quality::auto());
-
-                return (string) $image->toUrl();
+                return $this->transformedUrl($source, $transformationName);
             }
         }
 
         return $source;
+    }
+
+    /**
+     * Product detail reuses the card transform URL so listing and PDP show the same image.
+     */
+    private function detailUrl(string $source): string
+    {
+        $cardTransform = config('cloudinary.transformations.card', 'ecomshop_card');
+
+        if (! is_string($cardTransform) || $cardTransform === '') {
+            return $source;
+        }
+
+        return $this->transformedUrl($source, $cardTransform);
+    }
+
+    private function transformedUrl(string $source, string $transformationName): string
+    {
+        $image = $this->buildImage($source);
+
+        $image
+            ->addTransformation(NamedTransformation::name($transformationName))
+            ->format(Format::auto())
+            ->quality(Quality::auto());
+
+        return (string) $image->toUrl();
     }
 
     private function buildImage(string $source): Image
