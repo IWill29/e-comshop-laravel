@@ -21,12 +21,13 @@ class CartTest extends TestCase
             'stock' => 5,
         ]);
 
-        $response = $this->post(route('cart.store', $product), [
-            'size' => 42,
-            'quantity' => 1,
-        ]);
+        $response = $this->from(route('products.show', $product))
+            ->post(route('cart.store', $product), [
+                'size' => 42,
+                'quantity' => 1,
+            ]);
 
-        $response->assertRedirect(route('cart.index'));
+        $response->assertRedirect(route('products.show', $product));
 
         $cart = app(CartService::class);
         $this->assertSame(1, $cart->count());

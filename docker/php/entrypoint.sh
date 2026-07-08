@@ -33,6 +33,16 @@ fi
 
 php artisan migrate --force --no-interaction || true
 
+# Re-populate demo catalog after fresh migrate or empty PostgreSQL volume.
+if php -r "
+require 'vendor/autoload.php';
+\$app = require 'bootstrap/app.php';
+\$app->make(Illuminate\Contracts\Console\Kernel::class)->bootstrap();
+exit(\App\Models\Product::query()->count() === 0 ? 0 : 1);
+" 2>/dev/null; then
+    php artisan db:seed --force --no-interaction
+fi
+
 if [ "${DOCKER_ROUTE_CACHE:-1}" = "1" ]; then
     php artisan route:cache --no-interaction 2>/dev/null || true
     php artisan view:cache --no-interaction 2>/dev/null || true

@@ -39,7 +39,7 @@ class CartController extends Controller
             (int) ($validated['quantity'] ?? 1),
         );
 
-        return redirect()->route('cart.index');
+        return back();
     }
 
     public function update(

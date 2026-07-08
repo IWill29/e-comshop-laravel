@@ -425,7 +425,7 @@
     ]
   },
   "resources/js/Pages/Shop/Show.tsx": {
-    "file": "assets/Show-DLrynn_o.js",
+    "file": "assets/Show-Cnaq2QXw.js",
     "name": "Show",
     "src": "resources/js/Pages/Shop/Show.tsx",
     "isDynamicEntry": true,
@@ -449,7 +449,7 @@
     ]
   },
   "resources/js/app.tsx": {
-    "file": "assets/app-KUeL94x7.js",
+    "file": "assets/app-Y4g2Wwwf.js",
     "name": "app",
     "src": "resources/js/app.tsx",
     "isEntry": true,
@@ -484,7 +484,7 @@
       "resources/js/Pages/Welcome.tsx"
     ],
     "css": [
-      "assets/app-Du1jVHOn.css"
+      "assets/app-BGo0CMqz.css"
     ]
   }
 }
