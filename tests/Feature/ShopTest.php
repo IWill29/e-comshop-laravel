@@ -189,4 +189,22 @@ class ShopTest extends TestCase
                 ->where('products.data.0.id', $product->id)
             );
     }
+
+    public function test_product_show_uses_card_crop_for_detail_image(): void
+    {
+        config(['cloudinary.cloud_name' => 'rnihysop']);
+
+        $product = Product::factory()->create([
+            'slug' => 'dr-martens-1460',
+            'image_url' => 'dr-martens-1460',
+        ]);
+
+        $this->get(route('products.show', $product))
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('Shop/Show')
+                ->where('product.imageUrl', fn (string $url): bool => str_contains($url, 't_ecomshop_card')
+                    && ! str_contains($url, 't_ecomshop_detail')
+                    && ! str_contains($url, 'c_scale')));
+    }
 }

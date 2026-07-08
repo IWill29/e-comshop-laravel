@@ -155,7 +155,10 @@ class CartService
     public function toFrontendItems(): array
     {
         return array_map(
-            fn (CartItemData $item): array => $item->toFrontendArray(),
+            fn (CartItemData $item): array => [
+                ...$item->toFrontendArray(),
+                'imageUrl' => $this->images->url($item->imageUrl, ProductImageSize::Cart),
+            ],
             $this->items(),
         );
     }

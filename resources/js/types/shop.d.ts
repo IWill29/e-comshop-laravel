@@ -3,6 +3,7 @@ export interface Category {
     name: string;
     slug: string;
     productCount?: number;
+    imageUrl?: string;
 }
 
 export interface ProductCategory {

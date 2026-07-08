@@ -163,10 +163,16 @@ export default function Home({
                         </Link>
                     </div>
 
-                    <div className="-mx-4 mt-6 flex gap-3 overflow-x-auto px-4 pb-2 snap-x snap-mandatory scroll-touch sm:-mx-6 sm:mt-8 sm:gap-4 sm:px-6 lg:mx-0 lg:px-0 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-                        {categories.map((category) => (
-                            <CategoryTile key={category.id} category={category} />
-                        ))}
+                    <div className="mt-6 overflow-x-auto overscroll-x-contain pb-2 scroll-touch sm:mt-8 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                        <div className="flex w-max min-w-full gap-3 snap-x snap-mandatory sm:gap-4">
+                            {categories.map((category) => (
+                                <CategoryTile key={category.id} category={category} />
+                            ))}
+                            <span
+                                className="w-4 shrink-0 snap-none sm:w-6"
+                                aria-hidden="true"
+                            />
+                        </div>
                     </div>
                 </div>
             </section>

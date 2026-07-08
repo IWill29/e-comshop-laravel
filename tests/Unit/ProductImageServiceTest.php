@@ -30,7 +30,7 @@ class ProductImageServiceTest extends TestCase
         config(['cloudinary.url' => null, 'cloudinary.cloud_name' => null]);
 
         $service = new ProductImageService;
-        $source = 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=800';
+        $source = 'https://example.com/shoe.jpg';
 
         $this->assertSame($source, $service->url($source, ProductImageSize::Card));
         $this->assertFalse($service->isEnabled());
@@ -53,7 +53,7 @@ class ProductImageServiceTest extends TestCase
         ]);
 
         $service = new ProductImageService;
-        $source = 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=800';
+        $source = 'https://example.com/shoe.jpg';
 
         $url = $service->url($source, ProductImageSize::Card);
 
@@ -66,16 +66,19 @@ class ProductImageServiceTest extends TestCase
     public function test_builds_upload_cdn_url_for_cloudinary_public_id(): void
     {
         $this->configureDemoCloudinary([
-            'cloudinary.transformations.detail' => 'ecomshop_detail',
+            'cloudinary.transformations.card' => 'ecomshop_card',
         ]);
 
         $service = new ProductImageService;
 
-        $url = $service->url('nike-air-max-90', ProductImageSize::Detail);
+        $cardUrl = $service->url('nike-air-max-90', ProductImageSize::Card);
+        $detailUrl = $service->url('nike-air-max-90', ProductImageSize::Detail);
 
-        $this->assertStringContainsString(self::DEMO_UPLOAD_CDN_PREFIX, $url);
-        $this->assertStringContainsString('t_ecomshop_detail', $url);
-        $this->assertStringContainsString('nike-air-max-90', $url);
+        $this->assertSame($cardUrl, $detailUrl);
+        $this->assertStringContainsString(self::DEMO_UPLOAD_CDN_PREFIX, $detailUrl);
+        $this->assertStringContainsString('t_ecomshop_card', $detailUrl);
+        $this->assertStringNotContainsString('t_ecomshop_detail', $detailUrl);
+        $this->assertStringContainsString('nike-air-max-90', $detailUrl);
     }
 
     public function test_builds_hero_cdn_url_for_home_featured_image(): void

@@ -1,10 +1,10 @@
 [
-    {"name": "Men's Shoes", "slug": "mens"},
-    {"name": "Women's Shoes", "slug": "womens"},
-    {"name": "Kids' Shoes", "slug": "kids"},
-    {"name": "Sneakers", "slug": "sneakers"},
-    {"name": "Boots", "slug": "boots"},
-    {"name": "Sandals", "slug": "sandals"},
-    {"name": "Running", "slug": "running"},
-    {"name": "Casual", "slug": "casual"}
+    {"name": "Men's Shoes", "slug": "mens", "image_url": "category-mens"},
+    {"name": "Women's Shoes", "slug": "womens", "image_url": "category-womens"},
+    {"name": "Kids' Shoes", "slug": "kids", "image_url": "category-kids"},
+    {"name": "Sneakers", "slug": "sneakers", "image_url": "category-sneakers"},
+    {"name": "Boots", "slug": "boots", "image_url": "category-boots"},
+    {"name": "Sandals", "slug": "sandals", "image_url": "category-sandals"},
+    {"name": "Running", "slug": "running", "image_url": "category-running"},
+    {"name": "Casual", "slug": "casual", "image_url": "category-casual"}
 ]

@@ -15,6 +15,27 @@ class CheckoutTest extends TestCase
 {
     use RefreshDatabase;
 
+    public function test_index_returns_cloudinary_image_urls_for_cart_items(): void
+    {
+        config(['cloudinary.cloud_name' => 'rnihysop']);
+
+        $product = Product::factory()->create([
+            'slug' => 'nike-air-max-90',
+            'image_url' => 'nike-air-max-90',
+            'sizes' => [42],
+            'stock' => 5,
+        ]);
+
+        app(CartService::class)->add($product, 42, 1);
+
+        $this->get(route('checkout.index'))
+            ->assertOk()
+            ->assertInertia(fn ($page) => $page
+                ->component('Checkout/Index')
+                ->has('items', 1)
+                ->where('items.0.imageUrl', fn (string $url): bool => str_contains($url, 'res.cloudinary.com/rnihysop/')));
+    }
+
     public function test_store_rejects_empty_cart(): void
     {
         $this->from(route('checkout.index'))
