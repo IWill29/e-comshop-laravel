@@ -21,7 +21,7 @@ class CheckoutController extends Controller
     public function index(Request $request, CartService $cart): Response
     {
         return Inertia::render('Checkout/Index', [
-            'items' => $cart->toFrontendItems(),
+            'items' => $cart->toCartPageItems(),
             'summary' => $cart->summary(),
             'defaults' => [
                 'email' => $request->user()?->email ?? '',

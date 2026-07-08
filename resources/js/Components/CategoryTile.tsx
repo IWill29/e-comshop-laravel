@@ -2,23 +2,12 @@ import { Category } from '@/types/shop';
 import { FALLBACK_SHOE_IMAGE, handleImageError } from '@/lib/image';
 import { Link } from '@inertiajs/react';
 
-const categoryImages: Record<string, string> = {
-    mens: 'https://images.unsplash.com/photo-1600185365926-3a8ce9cbad2a?w=600&q=80',
-    womens: 'https://images.unsplash.com/photo-1560769629-975ec94d6a86?w=600&q=80',
-    kids: 'https://images.unsplash.com/photo-1514989940723-e8e51635b782?w=600&q=80',
-    sneakers: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600&q=80',
-    boots: 'https://images.unsplash.com/photo-1608256246330-53e6090a2b9a?w=600&q=80',
-    sandals: 'https://images.unsplash.com/photo-1562273138-f46be4ebdf33?w=600&q=80',
-    running: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600&q=80',
-    casual: 'https://images.unsplash.com/photo-1608231388042-1630b4e282a9?w=600&q=80',
-};
-
 interface CategoryTileProps {
     category: Category;
 }
 
 export default function CategoryTile({ category }: Readonly<CategoryTileProps>) {
-    const image = categoryImages[category.slug] ?? FALLBACK_SHOE_IMAGE;
+    const image = category.imageUrl || FALLBACK_SHOE_IMAGE;
 
     return (
         <Link

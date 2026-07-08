@@ -30,7 +30,7 @@ class ProductImageServiceTest extends TestCase
         config(['cloudinary.url' => null, 'cloudinary.cloud_name' => null]);
 
         $service = new ProductImageService;
-        $source = 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=800';
+        $source = 'https://example.com/shoe.jpg';
 
         $this->assertSame($source, $service->url($source, ProductImageSize::Card));
         $this->assertFalse($service->isEnabled());
@@ -53,7 +53,7 @@ class ProductImageServiceTest extends TestCase
         ]);
 
         $service = new ProductImageService;
-        $source = 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=800';
+        $source = 'https://example.com/shoe.jpg';
 
         $url = $service->url($source, ProductImageSize::Card);
 
