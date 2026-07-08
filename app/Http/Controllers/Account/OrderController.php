@@ -54,8 +54,8 @@ class OrderController extends Controller
             'number' => $this->orderNumber($order),
             'total' => $order->total,
             'currency' => $order->currency,
-            'status' => $order->status->value,
-            'paymentStatus' => $order->payment_status->value,
+            'status' => $order->orderStatus()->value,
+            'paymentStatus' => $order->paymentStatus()->value,
             'itemCount' => (int) $order->items_count,
             'placedAt' => $order->created_at?->toIso8601String() ?? now()->toIso8601String(),
         ];

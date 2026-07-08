@@ -50,7 +50,7 @@ class HandleStripeWebhookAction
 
         $order = $this->findOrder($session);
 
-        if ($order === null || $order->payment_status === PaymentStatus::Paid) {
+        if ($order === null || $order->isPaid()) {
             return;
         }
 
@@ -66,14 +66,14 @@ class HandleStripeWebhookAction
         $session = $this->sessionFromEvent($event);
         $order = $this->findOrder($session);
 
-        if ($order === null || $order->payment_status !== PaymentStatus::Pending) {
+        if ($order === null || ! $order->isPaymentPending()) {
             return;
         }
 
         DB::transaction(function () use ($order): void {
             $order->refresh();
 
-            if ($order->payment_status !== PaymentStatus::Pending) {
+            if (! $order->isPaymentPending()) {
                 return;
             }
 
@@ -95,26 +95,44 @@ class HandleStripeWebhookAction
 
     private function findOrder(Session $session): ?Order
     {
-        $metadata = $session->metadata ?? null;
-        $orderId = is_object($metadata) && isset($metadata->order_id)
-            ? $metadata->order_id
-            : (is_array($metadata) ? ($metadata['order_id'] ?? null) : null);
+        $orderId = $this->orderIdFromSession($session);
 
-        if (is_string($orderId) && $orderId !== '') {
-            $order = Order::query()->find((int) $orderId);
+        if ($orderId !== null) {
+            $order = Order::query()->find($orderId);
 
             if ($order !== null) {
                 return $order;
             }
         }
 
-        if (! is_string($session->id) || $session->id === '') {
+        $sessionId = $session->id;
+
+        if ($sessionId === '') {
             return null;
         }
 
         return Order::query()
-            ->where('stripe_session_id', $session->id)
+            ->where('stripe_session_id', $sessionId)
             ->first();
+    }
+
+    private function orderIdFromSession(Session $session): ?int
+    {
+        $metadata = $session->metadata;
+
+        if ($metadata === null || ! isset($metadata['order_id'])) {
+            return null;
+        }
+
+        $rawOrderId = $metadata['order_id'];
+
+        if (! is_string($rawOrderId) && ! is_int($rawOrderId)) {
+            return null;
+        }
+
+        $orderId = (int) $rawOrderId;
+
+        return $orderId > 0 ? $orderId : null;
     }
 
     private function restoreStock(Order $order): void

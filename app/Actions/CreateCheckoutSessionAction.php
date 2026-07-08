@@ -154,9 +154,7 @@ class CreateCheckoutSessionAction
                 ]);
             }
 
-            $sizes = $product->sizes;
-
-            if (! is_array($sizes) || ! in_array($item->size, $sizes, true)) {
+            if (! $product->supportsSize($item->size)) {
                 throw ValidationException::withMessages([
                     'cart' => 'A selected size in your cart is no longer available.',
                 ]);

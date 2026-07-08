@@ -83,9 +83,7 @@ class CartService
             ]);
         }
 
-        $sizes = $product->sizes;
-
-        if (! is_array($sizes) || ! in_array($size, $sizes, true)) {
+        if (! $product->supportsSize($size)) {
             throw ValidationException::withMessages([
                 'size' => 'Selected size is not available for this product.',
             ]);
@@ -106,7 +104,7 @@ class CartService
         }
 
         $existing = $indexed[$key] ?? null;
-        $newQuantity = ($existing?->quantity ?? 0) + $quantity;
+        $newQuantity = ($existing !== null ? $existing->quantity : 0) + $quantity;
 
         if ($product->stock < $newQuantity) {
             throw ValidationException::withMessages([
@@ -193,9 +191,7 @@ class CartService
                 continue;
             }
 
-            $sizes = $product->sizes;
-
-            if (! is_array($sizes) || ! in_array($item->size, $sizes, true)) {
+            if (! $product->supportsSize($item->size)) {
                 continue;
             }
 
@@ -259,9 +255,7 @@ class CartService
             ]);
         }
 
-        $sizes = $product->sizes;
-
-        if (! is_array($sizes) || ! in_array($item->size, $sizes, true)) {
+        if (! $product->supportsSize($item->size)) {
             $this->remove($key);
 
             throw ValidationException::withMessages([

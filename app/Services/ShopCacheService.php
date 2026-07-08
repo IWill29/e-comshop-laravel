@@ -116,6 +116,7 @@ class ShopCacheService
         $activeProducts = Product::query()->active();
 
         $priceRange = (clone $activeProducts)
+            ->toBase()
             ->selectRaw('MIN(price) as min_price, MAX(price) as max_price')
             ->first();
 
@@ -138,8 +139,8 @@ class ShopCacheService
             'genders' => ['men', 'women', 'unisex', 'kids'],
             'sizes' => array_map('intval', $sizes),
             'priceRange' => [
-                'min' => (int) ($priceRange?->min_price ?? 0),
-                'max' => (int) ($priceRange?->max_price ?? 0),
+                'min' => (int) ($priceRange->min_price ?? 0),
+                'max' => (int) ($priceRange->max_price ?? 0),
             ],
         ];
     }

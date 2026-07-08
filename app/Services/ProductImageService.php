@@ -8,7 +8,6 @@ use App\Enums\ProductImageSize;
 use Cloudinary\Asset\Image;
 use Cloudinary\Configuration\Configuration;
 use Cloudinary\Transformation\Format;
-use Cloudinary\Transformation\NamedTransformation;
 use Cloudinary\Transformation\Quality;
 
 class ProductImageService
@@ -63,7 +62,7 @@ class ProductImageService
         $image = $this->buildImage($source);
 
         $image
-            ->addTransformation(NamedTransformation::name($transformationName))
+            ->addTransformation($transformationName)
             ->format(Format::auto())
             ->quality(Quality::auto());
 

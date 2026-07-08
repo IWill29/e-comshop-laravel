@@ -8,6 +8,7 @@ use App\Actions\CreateCheckoutSessionAction;
 use App\DTOs\CheckoutData;
 use App\Http\Requests\StoreCheckoutRequest;
 use App\Models\Order;
+use App\Models\User;
 use App\Services\CartService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -20,11 +21,14 @@ class CheckoutController extends Controller
 {
     public function index(Request $request, CartService $cart): Response
     {
+        /** @var User|null $user */
+        $user = $request->user();
+
         return Inertia::render('Checkout/Index', [
             'items' => $cart->toCartPageItems(),
             'summary' => $cart->summary(),
             'defaults' => [
-                'email' => $request->user()?->email ?? '',
+                'email' => $user !== null ? $user->email : '',
                 'name' => '',
                 'line1' => '',
                 'line2' => '',

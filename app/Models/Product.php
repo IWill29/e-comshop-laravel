@@ -6,6 +6,7 @@ namespace App\Models;
 
 use App\DTOs\CatalogFiltersData;
 use Database\Factories\ProductFactory;
+use Illuminate\Database\Connection;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -13,6 +14,14 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+/**
+ * @property list<int> $sizes
+ * @property int $price
+ * @property int|null $compare_at_price
+ * @property int $stock
+ * @property bool $is_active
+ * @property bool $is_featured
+ */
 #[Fillable([
     'category_id',
     'name',
@@ -88,7 +97,10 @@ class Product extends Model
         }
 
         $pattern = '%'.addcslashes($term, '%_\\').'%';
-        $operator = $query->getConnection()->getDriverName() === 'pgsql' ? 'ilike' : 'like';
+        $connection = $query->getConnection();
+        $operator = $connection instanceof Connection && $connection->getDriverName() === 'pgsql'
+            ? 'ilike'
+            : 'like';
 
         return $query->where(function (Builder $builder) use ($pattern, $operator): void {
             $builder
@@ -148,6 +160,25 @@ class Product extends Model
     public function orderItems(): HasMany
     {
         return $this->hasMany(OrderItem::class);
+    }
+
+    public function supportsSize(int $size): bool
+    {
+        return in_array($size, $this->availableSizes(), true);
+    }
+
+    /**
+     * @return list<int>
+     */
+    public function availableSizes(): array
+    {
+        $sizes = $this->getAttribute('sizes');
+
+        if (! is_array($sizes)) {
+            return [];
+        }
+
+        return array_map(static fn (mixed $value): int => (int) $value, $sizes);
     }
 
     /**
