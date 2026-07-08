@@ -236,7 +236,45 @@ class CreateCheckoutSessionAction
             'success_url' => route('checkout.success').'?session_id={CHECKOUT_SESSION_ID}',
             'cancel_url' => route('checkout.cancel'),
             'metadata' => $checkout->toStripeMetadata($order->id),
+            'branding_settings' => $this->checkoutBrandingSettings(),
         ]);
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function checkoutBrandingSettings(): array
+    {
+        /** @var array<string, string|null> $branding */
+        $branding = config('services.stripe.branding', []);
+
+        $settings = [
+            'display_name' => $branding['display_name'] ?? 'ParaditX',
+            'background_color' => $branding['background_color'] ?? '#FAFAF9',
+            'button_color' => $branding['button_color'] ?? '#4F46E5',
+            'border_style' => $branding['border_style'] ?? 'rounded',
+            'font_family' => $branding['font_family'] ?? 'inter',
+        ];
+
+        $iconFile = $branding['icon_file'] ?? null;
+
+        if (is_string($iconFile) && $iconFile !== '') {
+            $settings['icon'] = [
+                'type' => 'file',
+                'file' => $iconFile,
+            ];
+        }
+
+        $logoFile = $branding['logo_file'] ?? null;
+
+        if (is_string($logoFile) && $logoFile !== '') {
+            $settings['logo'] = [
+                'type' => 'file',
+                'file' => $logoFile,
+            ];
+        }
+
+        return $settings;
     }
 
     /**

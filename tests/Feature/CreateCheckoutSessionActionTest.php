@@ -98,6 +98,38 @@ class CreateCheckoutSessionActionTest extends TestCase
         $this->assertSame(0, Order::query()->count());
     }
 
+    public function test_checkout_branding_settings_include_configured_icon_and_logo_files(): void
+    {
+        config([
+            'services.stripe.branding' => [
+                'display_name' => 'ParaditX',
+                'background_color' => '#FAFAF9',
+                'button_color' => '#4F46E5',
+                'border_style' => 'rounded',
+                'font_family' => 'inter',
+                'icon_file' => 'file_test_icon',
+                'logo_file' => 'file_test_logo',
+            ],
+        ]);
+
+        $action = app(CreateCheckoutSessionAction::class);
+        $method = new \ReflectionMethod(CreateCheckoutSessionAction::class, 'checkoutBrandingSettings');
+        $method->setAccessible(true);
+
+        /** @var array<string, mixed> $settings */
+        $settings = $method->invoke($action);
+
+        $this->assertSame('ParaditX', $settings['display_name']);
+        $this->assertSame([
+            'type' => 'file',
+            'file' => 'file_test_icon',
+        ], $settings['icon']);
+        $this->assertSame([
+            'type' => 'file',
+            'file' => 'file_test_logo',
+        ], $settings['logo']);
+    }
+
     /**
      * @return array<string, string>
      */

@@ -39,6 +39,15 @@ return [
         'key' => env('STRIPE_KEY'),
         'secret' => env('STRIPE_SECRET'),
         'webhook_secret' => env('STRIPE_WEBHOOK_SECRET'),
+        'branding' => [
+            'display_name' => env('STRIPE_BRANDING_DISPLAY_NAME', 'ParaditX'),
+            'background_color' => env('STRIPE_BRANDING_BACKGROUND_COLOR', '#FAFAF9'),
+            'button_color' => env('STRIPE_BRANDING_BUTTON_COLOR', '#4F46E5'),
+            'border_style' => env('STRIPE_BRANDING_BORDER_STYLE', 'rounded'),
+            'font_family' => env('STRIPE_BRANDING_FONT_FAMILY', 'inter'),
+            'icon_file' => env('STRIPE_BRANDING_ICON_FILE'),
+            'logo_file' => env('STRIPE_BRANDING_LOGO_FILE'),
+        ],
     ],
 
     'cloudinary' => [
